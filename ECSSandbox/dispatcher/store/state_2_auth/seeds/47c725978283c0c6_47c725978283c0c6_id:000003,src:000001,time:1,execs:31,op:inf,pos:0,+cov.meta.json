@@ -1,0 +1,19 @@
+{
+  "v": 1,
+  "kind": "seed",
+  "node_id": "Ubuntu64",
+  "state": "state_2_auth",
+  "hash": "47c725978283c0c698a57ed7f2a3d57a89582fe68294ec300aeb04fd4a83dae8",
+  "name": "47c725978283c0c6_id:000003,src:000001,time:1,execs:31,op:inf,pos:0,+cov",
+  "size": 4,
+  "ts": 1792551138.4280853,
+  "host": "Ubuntu64",
+  "stats": {
+    "execs_done": "39",
+    "execs_per_sec": "13000.00",
+    "corpus_count": "4",
+    "bitmap_cvg": "38.98%",
+    "saved_crashes": "0",
+    "edges_found": "23"
+  }
+}

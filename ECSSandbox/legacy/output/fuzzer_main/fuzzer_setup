@@ -1,0 +1,9 @@
+# environment variables:
+AFL_CUSTOM_INFO_PROGRAM=./sandbox_harness
+AFL_CUSTOM_INFO_PROGRAM_ARGV=
+AFL_CUSTOM_INFO_OUT=/home/barry/桌面/SandboxFuzzer/ECSSandbox/output/fuzzer_main
+AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
+AFL_NO_UI=1
+AFL_SKIP_CPUFREQ=1
+# command line:
+'afl-fuzz' '-i' '/home/barry/桌面/SandboxFuzzer/ECSSandbox/seeds_state2' '-o' '/home/barry/桌面/SandboxFuzzer/ECSSandbox/output' '-M' 'fuzzer_main' '-t' '1000' '--' './sandbox_harness'

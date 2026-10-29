@@ -1,0 +1,13 @@
+样本                                                   判定       观测
+----------------------------------------------------------------------------------------------------
+b1_pass_wrong.raw                                    靶机存活     靶机存活   payload='PASS wrong\\r\\n'
+b2_pass_truncated.raw                                靶机存活     靶机存活   payload='PASS CRAS\\r\\n'
+b3_double_user.raw                                   靶机存活     靶机存活   payload='USER admin\\r\\n'
+b4_pass_lowercase.raw                                靶机存活     靶机存活   payload='PASS crash\\r\\n'
+b5_multiline_benign.raw                              靶机存活     靶机存活   payload='HELP\\r\\nPASS CRAS\\r\\n'
+f_01e5300cb938420bccc1b28b829830842f7929e1c6c817e5f8280f59ae790fc5.raw 靶机存活     靶机存活   payload='PASS oGND.RERR\x80RRRRRRRRRRRR\\n'
+f_19469a78c4e76f5350bac399a27c6fe1bc0d64ed7fe5093faa49c5a1c2f813f3.raw 靶机存活     靶机存活   payload='HELP 123456\\r\\n'
+f_1f994b09bd3839d9309d92d337c038651e1413036641918efd0bfb6fa799e74d.raw 靶机存活     靶机存活   payload='REINSBF-PLACEHOLDEÒ-1\\r\\n'
+f_272f2508a48d8583cccbf746ac1811fa8ea553149b76f23d12851ac3556789ee.raw 靶机存活     靶机存活   payload='ACCT 123456\\r\\n'
+----------------------------------------------------------------------------------------------------
+合计 9  符合预期=9  违背预期=0  跳过=0

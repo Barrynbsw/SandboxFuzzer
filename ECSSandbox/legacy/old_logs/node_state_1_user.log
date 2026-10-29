@@ -1,0 +1,147 @@
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         state_1_user   ← 全机统一，可切换
+  实例数:       4（各自独立 outdir，互不盲同步）
+  靶机端口:     9001 .. 9004
+  共享种子池:   /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[STATE] node_state.current = state_1_user
+[LAUNCH] 启动 4 个状态同质沙箱...
+    [0] port=9001  SHM_ID=65550  server_loop=6690
+    [1] port=9002  SHM_ID=65551  server_loop=6696
+    [2] port=9003  SHM_ID=65552  server_loop=6701
+    [3] port=9004  SHM_ID=65553  server_loop=6706
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 4 切分初始语料...
+[seedhub] 初始语料崩溃样本 → crashes/  s1_3.raw   f2df1554f49e7549
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] 分片 2 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：2 个正常种子 → 4 个分片  崩溃样本=1  占位=2
+[seedhub] 池=2  分片=[0, 1, 0, 1]  合计=2  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9001  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9002  -i <分片1>  -F work/<state>/1
+[AFL++] fuzzer_2  port=9003  -i <分片2>  -F work/<state>/2
+[AFL++] fuzzer_3  port=9004  -i <分片3>  -F work/<state>/3
+
+[RUN] 4 个 AFL++ 实例运行中（状态同质：state_1_user）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=6735
+
+[RUN] 将在 25s 后自动停止...
+
+============================================
+  状态 state_1_user — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       5403         217.05     2          1            30.51%     18      
+fuzzer_1       8534         342.83     2          1            33.90%     20      
+fuzzer_2       6570         263.94     2          1            30.51%     18      
+fuzzer_3       5124         205.92     2          1            33.90%     20      
+
+  ─── 去重分工核查 ───
+[seedhub] 池=7  分片=[1, 2, 2, 2]  合计=7  重复=0  发现者残留=5
+
+  共享种子池: /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user
+  分片投喂:   /home/barry/桌面/SandboxFuzzer/ECSSandbox/work/state_1_user/<0..3>
+  崩溃归档:   /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 启动  state=state_1_user  实例数=4  owner模式=hash
+[seedhub] 公共池: /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user
+[seedhub] 投喂目录: /home/barry/桌面/SandboxFuzzer/ECSSandbox/work/state_1_user/<0..3>  (-F 指向)
+[seedhub] 池=2  分片=[0, 1, 0, 1]  合计=2  重复=0  发现者残留=0
+[seedhub] 新入库 优质种子=5  崩溃=1
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=5
+[seedhub] 新入库 优质种子=0  崩溃=1
+[seedhub] 新入库 优质种子=0  崩溃=1
+[seedhub] 池=7  分片=[1, 2, 2, 2]  合计=7  重复=0  发现者残留=5
+[seedhub] 新入库 优质种子=0  崩溃=1
+[seedhub] 池=7  分片=[1, 2, 2, 2]  合计=7  重复=0  发现者残留=5
+[seedhub] 池=7  分片=[1, 2, 2, 2]  合计=7  重复=0  发现者残留=5
+[seedhub] 已停止
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         state_1_user   ← 全机统一，可切换
+  实例数:       4（各自独立 outdir，互不盲同步）
+  靶机端口:     9001 .. 9004
+  共享种子池:   /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[STATE] node_state.current = state_1_user
+[LAUNCH] 启动 4 个状态同质沙箱...
+    [0] port=9001  SHM_ID=131090  server_loop=16584
+    [1] port=9002  SHM_ID=131100  server_loop=16591
+    [2] port=9003  SHM_ID=131102  server_loop=16596
+    [3] port=9004  SHM_ID=131103  server_loop=16601
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 4 切分初始语料...
+[seedhub] 初始语料崩溃样本 → crashes/  s1_3.raw   f2df1554f49e7549
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] 分片 2 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：2 个正常种子 → 4 个分片  崩溃样本=1  占位=2
+[seedhub] 池=2  分片=[0, 1, 0, 1]  合计=2  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9001  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9002  -i <分片1>  -F work/<state>/1
+[AFL++] fuzzer_2  port=9003  -i <分片2>  -F work/<state>/2
+[AFL++] fuzzer_3  port=9004  -i <分片3>  -F work/<state>/3
+
+[RUN] 4 个 AFL++ 实例运行中（状态同质：state_1_user）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=16628
+
+[RUN] 将在 25s 后自动停止...
+
+============================================
+  状态 state_1_user — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       2241         90.14      2          0            25.41%     47      
+fuzzer_1       2617         105.29     2          0            26.49%     49      
+fuzzer_2       2384         95.92      2          0            25.41%     47      
+fuzzer_3       2402         96.65      2          0            27.03%     50      
+
+  ─── 去重分工核查 ───
+[seedhub] 池=8  分片=[1, 5, 0, 2]  合计=8  重复=0  发现者残留=6
+
+  共享种子池: /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user
+  分片投喂:   /home/barry/桌面/SandboxFuzzer/ECSSandbox/work/state_1_user/<0..3>
+  崩溃归档:   /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 启动  state=state_1_user  实例数=4  owner模式=hash
+[seedhub] 公共池: /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user
+[seedhub] 投喂目录: /home/barry/桌面/SandboxFuzzer/ECSSandbox/work/state_1_user/<0..3>  (-F 指向)
+[seedhub] 池=2  分片=[0, 1, 0, 1]  合计=2  重复=0  发现者残留=0
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=2
+[seedhub] 池=4  分片=[0, 2, 0, 2]  合计=4  重复=0  发现者残留=2
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=6
+[seedhub] 池=8  分片=[1, 5, 0, 2]  合计=8  重复=0  发现者残留=6
+[seedhub] 池=8  分片=[1, 5, 0, 2]  合计=8  重复=0  发现者残留=6
+[seedhub] 已停止

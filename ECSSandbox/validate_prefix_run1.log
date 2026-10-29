@@ -1,0 +1,34 @@
+Traceback (most recent call last):
+  File "/sbfpkg/ECSSandbox/validate_prefix.py", line 374, in <module>
+[validate] ALGO_DIR = /sbfpkg/PrefixMsgs algorithm
+==============================================================================
+会话前缀重建 —— 真机 ground truth 校验（LightFTP）
+==============================================================================
+  靶机      : /sbfpkg/ECSSandbox/third_party/lightftp/fftp
+  真值来源  : 真实响应码（RFC 959），与覆盖率完全独立
+  算法信号  : 覆盖率（__AFL_SHM_ID 零侵入采集）
+
+──────────────────────────────────────────────────────────────────────────────
+[0] 响应码基线（确认靶机行为符合 RFC 959）
+    单发 b'USER admin'                → 331
+    单发 b'PASS 123456'               → 530
+    单发 b'PWD'                       → 530
+    单发 b'NOOP'                      → 200
+    单发 b'SYST'                      → 215
+    单发 b'PASV'                      → 530
+    USER/PASS/PWD 连发        → ['331', '230', '257']
+
+──────────────────────────────────────────────────────────────────────────────
+[S1 前置连续在开头]
+  消息序列 : ['USER', 'PASS', 'PWD', 'CWD', 'NOOP']
+  真值依赖 : {0: [1, 2, 3], 1: [2, 3]}
+  真值前置 : [0, 1]  →  ['USER', 'PASS']
+  各条响应 : ['331', '230', '257', '250', '200']
+    raise SystemExit(run())
+  File "/sbfpkg/ECSSandbox/validate_prefix.py", line 238, in run
+    a2 = identify_prefix_messages(sim, n=n, tau=1, delta=delta,
+  File "/sbfpkg/PrefixMsgs algorithm/prefix_msg_identify.py", line 296, in identify_prefix_messages
+    cov_o = sim.run_single_idx(msgs_in_one)                  # 第 20 行
+  File "/sbfpkg/PrefixMsgs algorithm/prefix_msg_identify.py", line 198, in run_single_idx
+    return self._blob_runner(idx, ())
+TypeError: OracleSim._blob_runner() takes 2 positional arguments but 3 were given

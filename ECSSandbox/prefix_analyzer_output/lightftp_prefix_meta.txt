@@ -1,0 +1,11 @@
+PrefixMsgs=[0, 1]
+cut_at=2
+NeedSplit=True
+AllSplit=True
+N=6
+M0=b'USER admin\r\n'
+M1=b'PASS 123456\r\n'
+M2=b'PWD\r\n'
+M3=b'CWD /\r\n'
+M4=b'NOOP\r\n'
+M5=b'TYPE I\r\n'

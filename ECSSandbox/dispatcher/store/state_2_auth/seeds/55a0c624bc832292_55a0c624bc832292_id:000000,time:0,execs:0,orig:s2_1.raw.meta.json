@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "kind": "seed",
+  "node_id": "Ubuntu64",
+  "state": "state_2_auth",
+  "hash": "55a0c624bc8322924efbdd49c9538ee197b7e47abc5d2a9395702c7cd0d7a055",
+  "name": "55a0c624bc832292_id:000000,time:0,execs:0,orig:s2_1.raw",
+  "size": 15,
+  "ts": 1792551133.3887644,
+  "host": "Ubuntu64",
+  "stats": {}
+}

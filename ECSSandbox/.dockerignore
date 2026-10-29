@@ -1,0 +1,16 @@
+# 运行期产物 —— 容器里是全新跑，不要带宿主机的脏状态
+results/
+results_archive/
+corpus/
+work/
+run/
+__pycache__/
+tests/bin/
+*.o
+stateful_server
+sandbox_harness
+node_state.current
+sync_outbox/
+
+# 历史留档
+legacy/

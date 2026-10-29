@@ -1,0 +1,57 @@
+[stateful_server] Listening on port 9411 (SHM=none)
+[stateful_server] Listening on port 9411 (SHM=none)
+[stateful_server] Listening on port 9411 (SHM=none)
+[stateful_server] Listening on port 9411 (SHM=none)
+════ 崩溃判定链回归测试 ════
+靶机: ./tests/bin/stateful_server   端口: 9411
+
+[T1] 判活正向
+  ✓ 靶机应答中 → target_alive()=1
+
+[T2] 应答残留
+  ✓ 连接靶机
+  ✓ 发送前缀 12 字节
+  ✓ recv_lines(1) 读到 13 字节应答
+  ✓ 应答以 NUL 结尾、长度一致
+  ✓ 读干净后无残留应答（recv 立即 EAGAIN，得到 -1）
+  ✓ 新连接上 recv_lines 仍正常（13 字节）
+
+[T3] 真崩溃确认
+  ✓ PASS CRASH → confirm_crash()=1（可复现的真崩溃）
+
+[T4] 多行载荷归属
+  ✓ HELP+PASS CRASH（先回包后崩）→ confirm_crash()=1
+
+[T5] 良性零误报
+  ✓ PASS CRAS（不触发）→ confirm_crash()=0
+
+[T6] 多行良性零误报
+  ✓ HELP+PASS CRAS（多行良性）→ confirm_crash()=0
+
+[T7] 落 core 窗口（connect 通但不应答）
+  ✓ 假靶机 bind
+  ✓ 假靶机 listen（accept 队列灌满前 connect 都成功）
+  ✓ 落 core 窗口内 connect() 成功（旧判据会误判为存活）
+  ✓ 但 target_alive()=0 —— 不应答就不算活
+
+[T8] SIGPIPE 忽略
+  ✓ socketpair
+  ✓ send 到已关闭对端 → EPIPE 而非被信号杀死
+  ✓ 进程存活到 send() 返回之后（SIGPIPE 已被忽略）
+
+[T9] 崩溃后自动重启
+  ✓ 靶机被打死后能被保活循环拉起
+
+[T10] 前缀逐条交付（消息边界）
+  ✓ socketpair
+  ✓ 第 1 条报文【单独】到达 = USER admin
+（实得 USER admin
+）
+  ✓ 第 1 条之后无预发报文（边界没被压平）
+  ✓ 第 2 条报文【单独】到达 = PASS 123456
+（实得 PASS 123456
+）
+  ✓ 第 2 条之后无预发报文（边界没被压平）
+  ✓ send_prefix_msgs() 逐条收满应答并返回 0
+
+════ 通过 25  失败 0 ════

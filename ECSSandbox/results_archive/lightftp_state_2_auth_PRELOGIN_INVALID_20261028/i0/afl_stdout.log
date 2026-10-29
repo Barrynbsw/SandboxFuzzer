@@ -1,0 +1,402 @@
+[1;92m[+] [0mEnabled environment variable AFL_SKIP_CPUFREQ with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_AFFINITY with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_UI with value 1[0m
+[0;36mafl-fuzz++4.21c[0m based on afl by Michal Zalewski and a large online community
+[1;92m[+] [0mAFL++ is maintained by Marc "van Hauser" Heuse, Dominik Maier, Andrea Fioraldi and Heiko "hexcoder" Eißfeldt[0m
+[1;92m[+] [0mAFL++ is open source, get it at https://github.com/AFLplusplus/AFLplusplus[0m
+[1;92m[+] [0mNOTE: AFL++ >= v3 has changed defaults and behaviours - see README.md[0m
+[1;94m[*] [0mGetting to work...[0m
+[1;92m[+] [0mUsing exploration-based constant power schedule (EXPLORE)[0m
+[1;92m[+] [0mEnabled testcache with 50 MB[0m
+[1;92m[+] [0mGenerating fuzz data with a length of min=1 max=1048576[0m
+[1;94m[*] [0mChecking core_pattern...[0m
+
+[1;91m[-] [0mHmm, your system is configured to send core dump notifications to an
+    external utility. This will cause issues: there will be an extended delay
+    between stumbling upon a crash and having this information relayed to the
+    fuzzer via the standard waitpid() API.
+    If you're just testing, set 'AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1'.
+
+    To avoid having crashes misinterpreted as timeouts, please log in as root
+    and temporarily modify /proc/sys/kernel/core_pattern, like so:
+
+    echo core >/proc/sys/kernel/core_pattern
+[1;92m[+] [0mDisabling the UI because AFL_NO_UI is set.[0m
+[1;92m[+] [0mYou have 8 CPU cores and 4 runnable tasks (utilization: 50%).[0m
+[1;92m[+] [0mTry parallel jobs - see /usr/local/share/doc/afl/fuzzing_in_depth.md#c-using-multiple-cores[0m
+[1;94m[*] [0mSetting up output directories...[0m
+[1;93m[!] [1;97mWARNING: [0mNot binding to a CPU core (AFL_NO_AFFINITY set).[0m
+[1;94m[*] [0mScanning '/sandbox/corpus/lightftp_state_2_auth/init_shards/0'...[0m
+[1;92m[+] [0mLoaded a total of 79 seeds.[0m
+[1;94m[*] [0mCreating hard links for all input files...[0m
+[1;94m[*] [0mValidating target binary...[0m
+[1;92m[+] [0m[1;95mPersistent mode binary detected.[0m
+[1;92m[+] [0m[1;95mDeferred forkserver binary detected.[0m
+[1;94m[*] [0mSpinning up the fork server...[0m
+[1;92m[+] [0mAll right - new fork server model v1 is up.[0m
+[1;94m[*] [0mTarget map size: 241[0m
+[1;94m[*] [0mUsing SHARED MEMORY FUZZING feature.[0m
+[1;94m[*] [0mNo auto-generated dictionary tokens to reuse.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000000,time:0,execs:0,orig:0175854ac5384508_prev_001.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 8, map size = 55, exec speed = 1518 us, hash = 28cf621b0e34614d
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000001,time:0,execs:0,orig:0178357bf34e2e36_prev_002.raw'...[0m
+[1;90m    len = 4, map size = 54, exec speed = 1635 us, hash = dfc1fdb3afffc02a
+[0m[1;94m[*] [0mAttempting dry run with 'id:000002,time:0,execs:0,orig:10fa1e6972d5b8ae_prev_003.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 53, exec speed = 1641 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000003,time:0,execs:0,orig:13cb446e1a0607ee_prev_004.raw'...[0m
+[1;90m    len = 14, map size = 48, exec speed = 1554 us, hash = 753104680b50a6cc
+[0m[1;94m[*] [0mAttempting dry run with 'id:000004,time:0,execs:0,orig:19db79b07a417c30_prev_005.raw'...[0m
+[1;90m    len = 5, map size = 48, exec speed = 1729 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000005,time:0,execs:0,orig:2146b094ab4c9431_prev_006.raw'...[0m
+[1;90m    len = 19, map size = 53, exec speed = 2382 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000006,time:0,execs:0,orig:221712c186f9b8a6_prev_007.raw'...[0m
+[1;90m    len = 19, map size = 48, exec speed = 7658 us, hash = 76ced5e1063a6893
+[0m[1;94m[*] [0mAttempting dry run with 'id:000007,time:0,execs:0,orig:2c447d0f112cc7e3_prev_008.raw'...[0m
+[1;90m    len = 11, map size = 48, exec speed = 1957 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000008,time:0,execs:0,orig:2c7e3348dfbc6ac3_prev_009.raw'...[0m
+[1;90m    len = 7, map size = 54, exec speed = 2668 us, hash = dfc1fdb3afffc02a
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000009,time:0,execs:0,orig:2d8b5b96e5ed6594_prev_010.raw'...[0m
+[1;90m    len = 14, map size = 48, exec speed = 1982 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000010,time:0,execs:0,orig:2f22ff915bd930a2_prev_011.raw'...[0m
+[1;90m    len = 7, map size = 53, exec speed = 2499 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000011,time:0,execs:0,orig:3482147ff4cba703_prev_012.raw'...[0m
+[1;90m    len = 19, map size = 48, exec speed = 2079 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000012,time:0,execs:0,orig:3c1459e716732be5_prev_013.raw'...[0m
+[1;90m    len = 19, map size = 48, exec speed = 7907 us, hash = 76ced5e1063a6893
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000013,time:0,execs:0,orig:3caab503e6082f34_prev_014.raw'...[0m
+[1;90m    len = 19, map size = 58, exec speed = 2243 us, hash = 6df0640244ac6a2b
+[0m[1;94m[*] [0mAttempting dry run with 'id:000014,time:0,execs:0,orig:3dec9c302de1fa50_prev_015.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 48, exec speed = 2457 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000015,time:0,execs:0,orig:3f0beae1947d71c4_prev_016.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 5, map size = 54, exec speed = 3261 us, hash = 15468d282ead0435
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000016,time:0,execs:0,orig:44859568d81edb3d_prev_017.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 25, map size = 54, exec speed = 3152 us, hash = f8b7111ad73f90fc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000017,time:0,execs:0,orig:4dc2732ae67ccffb_prev_018.raw'...[0m
+[1;90m    len = 19, map size = 48, exec speed = 2746 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000018,time:0,execs:0,orig:4ec08adfc6bc5d80_prev_019.raw'...[0m
+[1;90m    len = 72, map size = 55, exec speed = 2208 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000019,time:0,execs:0,orig:538fd44745e71acb_prev_020.raw'...[0m
+[1;90m    len = 5, map size = 48, exec speed = 2490 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000020,time:0,execs:0,orig:560d33fd164438d1_prev_021.raw'...[0m
+[1;90m    len = 8, map size = 48, exec speed = 8126 us, hash = 76ced5e1063a6893
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000021,time:0,execs:0,orig:59c9e4824e084842_prev_022.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 73, map size = 53, exec speed = 2367 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000022,time:0,execs:0,orig:5c9a231f67a30942_prev_023.raw'...[0m
+[1;90m    len = 72, map size = 55, exec speed = 3118 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000023,time:0,execs:0,orig:5e2dcd917ca3bdc9_prev_024.raw'...[0m
+[1;90m    len = 5, map size = 58, exec speed = 2585 us, hash = 6df0640244ac6a2b
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000024,time:0,execs:0,orig:5e8e1ec6e46b4dba_prev_025.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 5, map size = 48, exec speed = 7999 us, hash = 413fa1fe4b5652b4
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000025,time:0,execs:0,orig:606209463f04b5d9_prev_026.raw'...[0m
+[1;90m    len = 19, map size = 53, exec speed = 2352 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000026,time:0,execs:0,orig:636cdb9c3dfc4f5f_prev_027.raw'...[0m
+[1;90m    len = 19, map size = 53, exec speed = 2514 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000027,time:0,execs:0,orig:63774a6ea59f2e78_prev_028.raw'...[0m
+[1;90m    len = 136, map size = 54, exec speed = 2397 us, hash = dfc1fdb3afffc02a
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000028,time:0,execs:0,orig:699dfca4646e61f2_prev_029.raw'...[0m
+[1;90m    len = 19, map size = 48, exec speed = 8112 us, hash = 76ced5e1063a6893
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000029,time:0,execs:0,orig:6cbef1e70e1d916b_prev_030.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 8, map size = 48, exec speed = 2057 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000030,time:0,execs:0,orig:6d965c591873c669_prev_031.raw'...[0m
+[1;90m    len = 5, map size = 48, exec speed = 2474 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000031,time:0,execs:0,orig:709e80c88487a241_prev_032.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 3, map size = 48, exec speed = 2136 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000032,time:0,execs:0,orig:713c8190445ba5fa_prev_033.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 56, exec speed = 2842 us, hash = 226042dc9236e1cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000033,time:0,execs:0,orig:7969ceee6681877d_prev_034.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 8, map size = 48, exec speed = 2449 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000034,time:0,execs:0,orig:7ade99156520d0b2_prev_035.raw'...[0m
+[1;90m    len = 32, map size = 54, exec speed = 2748 us, hash = 15468d282ead0435
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000035,time:0,execs:0,orig:7ba5d29fe543c75e_prev_036.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 18, map size = 55, exec speed = 2825 us, hash = 80da855090b9c8cb
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000036,time:0,execs:0,orig:7e18bd4e171d98be_prev_037.raw'...[0m
+[1;90m    len = 19, map size = 53, exec speed = 2802 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000037,time:0,execs:0,orig:7f8d7a87de9a4dcc_prev_038.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 72, map size = 55, exec speed = 2662 us, hash = 80da855090b9c8cb
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000038,time:0,execs:0,orig:84f81c54009f2175_prev_039.raw'...[0m
+[1;90m    len = 8, map size = 53, exec speed = 2710 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000039,time:0,execs:0,orig:8ece0dc33217b592_lightftp_2_2.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 7, map size = 53, exec speed = 2485 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000040,time:0,execs:0,orig:8ece0dc33217b592_prev_040.raw'...[0m
+[1;90m    len = 7, map size = 53, exec speed = 2647 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000041,time:0,execs:0,orig:91028dc78ebcccbd_prev_041.raw'...[0m
+[1;90m    len = 2, map size = 48, exec speed = 2248 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000042,time:0,execs:0,orig:9477eb31c783d6d0_prev_042.raw'...[0m
+[1;90m    len = 39, map size = 54, exec speed = 2935 us, hash = 15468d282ead0435
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000043,time:0,execs:0,orig:97582314587711c1_prev_043.raw'...[0m
+[1;90m    len = 8, map size = 54, exec speed = 2765 us, hash = 15468d282ead0435
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000044,time:0,execs:0,orig:97f1f8dcaeb35220_lightftp_2_1.raw'...[0m
+[1;90m    len = 5, map size = 54, exec speed = 2697 us, hash = dfc1fdb3afffc02a
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000045,time:0,execs:0,orig:97f1f8dcaeb35220_prev_044.raw'...[0m
+[1;90m    len = 5, map size = 54, exec speed = 2692 us, hash = dfc1fdb3afffc02a
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000046,time:0,execs:0,orig:a30145156535e04f_prev_045.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 7, map size = 55, exec speed = 2725 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000047,time:0,execs:0,orig:a311491ab25f18bc_prev_046.raw'...[0m
+[1;90m    len = 6, map size = 48, exec speed = 2651 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000048,time:0,execs:0,orig:a45c972871c7179f_prev_047.raw'...[0m
+[1;90m    len = 85, map size = 55, exec speed = 2766 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000049,time:0,execs:0,orig:a79d8762c5e2d501_prev_048.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 54, exec speed = 2641 us, hash = 15468d282ead0435
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000050,time:0,execs:0,orig:a971c31651182668_prev_049.raw'...[0m
+[1;90m    len = 19, map size = 48, exec speed = 2397 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000051,time:0,execs:0,orig:ab93cb52d7bcd12c_prev_050.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 21, map size = 48, exec speed = 7893 us, hash = 413fa1fe4b5652b4
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000052,time:0,execs:0,orig:ac6c418558768458_prev_051.raw'...[0m
+[1;90m    len = 8, map size = 48, exec speed = 2257 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000053,time:0,execs:0,orig:accdd15e8066a3da_prev_052.raw'...[0m
+[1;90m    len = 7, map size = 48, exec speed = 8080 us, hash = 76ced5e1063a6893
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000054,time:0,execs:0,orig:b0258d51e46b4e04_prev_053.raw'...[0m
+[1;90m    len = 43, map size = 54, exec speed = 2931 us, hash = 15468d282ead0435
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000055,time:0,execs:0,orig:b131c97e4ecd29a1_prev_054.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 72, map size = 55, exec speed = 2724 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000056,time:0,execs:0,orig:b5baec143c273bca_lightftp_2_3.raw'...[0m
+[1;90m    len = 6, map size = 55, exec speed = 3175 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000057,time:0,execs:0,orig:b5baec143c273bca_prev_055.raw'...[0m
+[1;90m    len = 6, map size = 55, exec speed = 2793 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000058,time:0,execs:0,orig:b621e669e443e31e_prev_056.raw'...[0m
+[1;90m    len = 7, map size = 55, exec speed = 2932 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000059,time:0,execs:0,orig:c00b0978acc73a7c_lightftp_2_4.raw'...[0m
+[1;90m    len = 8, map size = 55, exec speed = 2964 us, hash = 80da855090b9c8cb
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000060,time:0,execs:0,orig:c00b0978acc73a7c_prev_057.raw'...[0m
+[1;90m    len = 8, map size = 55, exec speed = 2658 us, hash = 80da855090b9c8cb
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000061,time:0,execs:0,orig:c208bc5042395a23_prev_058.raw'...[0m
+[1;90m    len = 118, map size = 55, exec speed = 2829 us, hash = 932b83d85d796ade
+[0m[1;94m[*] [0mAttempting dry run with 'id:000062,time:0,execs:0,orig:c27aec2689c70b5c_prev_059.raw'...[0m
+[1;90m    len = 19, map size = 48, exec speed = 7916 us, hash = 76ced5e1063a6893
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000063,time:0,execs:0,orig:c785028b7c893e41_prev_061.raw'...[0m
+[1;90m    len = 19, map size = 54, exec speed = 2553 us, hash = 15468d282ead0435
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000064,time:0,execs:0,orig:cc4857b81665f508_prev_062.raw'...[0m
+[1;90m    len = 19, map size = 48, exec speed = 7781 us, hash = 76ced5e1063a6893
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000065,time:0,execs:0,orig:ccf889b24807b299_prev_063.raw'...[0m
+[1;90m    len = 4, map size = 55, exec speed = 2368 us, hash = 80da855090b9c8cb
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000066,time:0,execs:0,orig:d0303ff8b600dbbf_prev_064.raw'...[0m
+[1;90m    len = 72, map size = 48, exec speed = 2182 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000067,time:0,execs:0,orig:d78b7e802ad34f79_prev_065.raw'...[0m
+[1;90m    len = 134, map size = 55, exec speed = 4390 us, hash = 1c8082057f523e26
+[0m[1;94m[*] [0mAttempting dry run with 'id:000068,time:0,execs:0,orig:d7fe6efe9b975a78_prev_066.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 119, map size = 53, exec speed = 2502 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000069,time:0,execs:0,orig:e44eadedfd932bb3_prev_067.raw'...[0m
+[1;90m    len = 14, map size = 55, exec speed = 2153 us, hash = 80da855090b9c8cb
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000070,time:0,execs:0,orig:e806831492858cc3_prev_068.raw'...[0m
+[1;90m    len = 8, map size = 53, exec speed = 2364 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000071,time:0,execs:0,orig:e8cbaecc75526895_prev_069.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 46, map size = 48, exec speed = 7836 us, hash = 76ced5e1063a6893
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000072,time:0,execs:0,orig:ead80dbf24b1ef9a_prev_070.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 14, map size = 55, exec speed = 2074 us, hash = 80da855090b9c8cb
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000073,time:0,execs:0,orig:ee5abd6d2ab9b9fa_prev_071.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 48, exec speed = 7696 us, hash = 76ced5e1063a6893
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000074,time:0,execs:0,orig:eea056dcdec6086a_prev_072.raw'...[0m
+[1;90m    len = 26, map size = 48, exec speed = 2033 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000075,time:0,execs:0,orig:f05867cd20d81a61_prev_073.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 72, map size = 55, exec speed = 2303 us, hash = 35c37931e96cc016
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000076,time:0,execs:0,orig:f76fc2cd32518d42_prev_074.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 23, map size = 48, exec speed = 2239 us, hash = 753104680b50a6cc
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000077,time:0,execs:0,orig:f8c1cb23db4625ef_prev_075.raw'...[0m
+[1;90m    len = 7, map size = 54, exec speed = 2336 us, hash = 15468d282ead0435
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000078,time:0,execs:0,orig:f916e89087e14a7d_prev_076.raw'...[0m
+[1;90m    len = 19, map size = 53, exec speed = 2364 us, hash = a627f6cc2eb8907d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;92m[+] [0mAll test cases processed.[0m
+[1;93m[!] [1;97mWARNING: [0m[1;91mSome test cases look useless. Consider using a smaller set.[0m
+[1;93m[!] [1;97mWARNING: [0mYou have lots of input files; try starting small.[0m
+[1;92m[+] [0mHere are some useful stats:
+
+[1;90m    Test case count : [0m9 favored, 24 variable, 65 ignored, 79 total
+[1;90m       Bitmap range : [0m48 to 58 bits (average: 51.92 bits)
+[1;90m        Exec timing : [0m1518 to 8080 us (average: 3271 us)
+[0m
+[1;94m[*] [0m-t option specified. We'll use an exec timeout of 1000 ms.[0m
+[1;92m[+] [0mAll set and ready to roll![0m
+[1;94m[*] [0mEntering queue cycle 1
+[0m
+[1;94m[*] [0mFuzzing test case #0 (79 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=1518, hits=0, map=55, ascii=0, run_time=0:00:00:00)...[0m
+[1;94m[*] [0mFuzzing test case #1 (79 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=1635, hits=0, map=54, ascii=0, run_time=0:00:00:01)...[0m
+[1;94m[*] [0mFuzzing test case #15 (79 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3261, hits=0, map=54, ascii=0, run_time=0:00:00:02)...[0m
+[1;94m[*] [0mFuzzing test case #23 (79 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=2585, hits=0, map=58, ascii=0, run_time=0:00:00:03)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #24 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=7999, hits=0, map=48, ascii=0, run_time=0:00:00:05)...[0m
+[1;94m[*] [0mFuzzing test case #41 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=2248, hits=0, map=48, ascii=0, run_time=0:00:00:06)...[0m
+[1;94m[*] [0mFuzzing test case #61 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=2829, hits=0, map=55, ascii=0, run_time=0:00:00:06)...[0m
+[1;94m[*] [0mFuzzing test case #65 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=2368, hits=0, map=55, ascii=0, run_time=0:00:00:08)...[0m
+[1;94m[*] [0mFuzzing test case #67 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=4390, hits=0, map=55, ascii=0, run_time=0:00:00:09)...[0m
+[1;94m[*] [0mEntering queue cycle 2
+[0m
+[1;94m[*] [0mFuzzing test case #0 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=150, weight=1, favorite=1, was_fuzzed=1, exec_us=1518, hits=0, map=55, ascii=0, run_time=0:00:00:10)...[0m
+[1;94m[*] [0mFuzzing test case #1 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=150, weight=1, favorite=1, was_fuzzed=1, exec_us=1635, hits=0, map=54, ascii=0, run_time=0:00:00:12)...[0m
+[1;94m[*] [0mFuzzing test case #15 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=3261, hits=0, map=54, ascii=0, run_time=0:00:00:14)...[0m
+[1;94m[*] [0mFuzzing test case #23 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2585, hits=0, map=58, ascii=0, run_time=0:00:00:15)...[0m
+[1;94m[*] [0mFuzzing test case #24 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=50, weight=1, favorite=1, was_fuzzed=1, exec_us=7999, hits=0, map=48, ascii=0, run_time=0:00:00:16)...[0m
+[1;94m[*] [0mFuzzing test case #41 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2248, hits=0, map=48, ascii=0, run_time=0:00:00:17)...[0m
+[1;94m[*] [0mFuzzing test case #61 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2829, hits=0, map=55, ascii=0, run_time=0:00:00:17)...[0m
+[1;94m[*] [0mFuzzing test case #65 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2368, hits=0, map=55, ascii=0, run_time=0:00:00:18)...[0m
+[1;94m[*] [0mFuzzing test case #67 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=75, weight=1, favorite=1, was_fuzzed=1, exec_us=4390, hits=0, map=55, ascii=0, run_time=0:00:00:19)...[0m
+[1;94m[*] [0mFuzzing test case #79 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=2168, hits=0, map=48, ascii=0, run_time=0:00:00:20)...[0m
+[1;94m[*] [0mEntering queue cycle 3
+[0m
+[1;94m[*] [0mFuzzing test case #0 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=150, weight=1, favorite=1, was_fuzzed=1, exec_us=1518, hits=0, map=55, ascii=0, run_time=0:00:00:21)...[0m
+[1;94m[*] [0mFuzzing test case #1 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=1635, hits=0, map=54, ascii=0, run_time=0:00:00:22)...[0m
+[1;94m[*] [0mFuzzing test case #15 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=3261, hits=0, map=54, ascii=0, run_time=0:00:00:23)...[0m
+[1;94m[*] [0mFuzzing test case #23 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2585, hits=0, map=58, ascii=0, run_time=0:00:00:24)...[0m
+[1;94m[*] [0mFuzzing test case #24 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=50, weight=1, favorite=1, was_fuzzed=1, exec_us=7999, hits=0, map=48, ascii=0, run_time=0:00:00:25)...[0m
+[1;94m[*] [0mFuzzing test case #41 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2248, hits=0, map=48, ascii=0, run_time=0:00:00:26)...[0m
+[1;94m[*] [0mFuzzing test case #53 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=8080, hits=0, map=48, ascii=0, run_time=0:00:00:27)...[0m
+[1;94m[*] [0mFuzzing test case #61 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2829, hits=0, map=55, ascii=0, run_time=0:00:00:27)...[0m
+[1;94m[*] [0mFuzzing test case #65 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2368, hits=0, map=55, ascii=0, run_time=0:00:00:28)...[0m
+[1;94m[*] [0mFuzzing test case #67 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=75, weight=1, favorite=1, was_fuzzed=1, exec_us=4390, hits=0, map=55, ascii=0, run_time=0:00:00:30)...[0m
+[1;94m[*] [0mEntering queue cycle 4
+[0m
+[1;94m[*] [0mFuzzing test case #0 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=150, weight=1, favorite=1, was_fuzzed=1, exec_us=1518, hits=0, map=55, ascii=0, run_time=0:00:00:30)...[0m
+[1;94m[*] [0mFuzzing test case #1 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=1635, hits=0, map=54, ascii=0, run_time=0:00:00:32)...[0m
+[1;94m[*] [0mFuzzing test case #15 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=3261, hits=0, map=54, ascii=0, run_time=0:00:00:33)...[0m
+[1;94m[*] [0mFuzzing test case #23 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2585, hits=0, map=58, ascii=0, run_time=0:00:00:34)...[0m
+[1;94m[*] [0mFuzzing test case #24 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=50, weight=1, favorite=1, was_fuzzed=1, exec_us=7999, hits=0, map=48, ascii=0, run_time=0:00:00:35)...[0m
+[1;94m[*] [0mFuzzing test case #41 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2248, hits=0, map=48, ascii=0, run_time=0:00:00:35)...[0m
+[1;94m[*] [0mFuzzing test case #61 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2829, hits=0, map=55, ascii=0, run_time=0:00:00:36)...[0m
+[1;94m[*] [0mFuzzing test case #65 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2368, hits=0, map=55, ascii=0, run_time=0:00:00:37)...[0m
+[1;94m[*] [0mFuzzing test case #67 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=75, weight=1, favorite=1, was_fuzzed=1, exec_us=4390, hits=0, map=55, ascii=0, run_time=0:00:00:38)...[0m
+[1;94m[*] [0mEntering queue cycle 5
+[0m
+[1;94m[*] [0mFuzzing test case #0 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=150, weight=1, favorite=1, was_fuzzed=1, exec_us=1518, hits=0, map=55, ascii=0, run_time=0:00:00:39)...[0m
+[1;94m[*] [0mFuzzing test case #1 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=1635, hits=0, map=54, ascii=0, run_time=0:00:00:40)...[0m
+[1;94m[*] [0mFuzzing test case #15 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=3261, hits=0, map=54, ascii=0, run_time=0:00:00:41)...[0m
+[1;94m[*] [0mFuzzing test case #16 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=3152, hits=0, map=54, ascii=0, run_time=0:00:00:43)...[0m
+[1;94m[*] [0mFuzzing test case #23 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2585, hits=0, map=58, ascii=0, run_time=0:00:00:44)...[0m
+[1;94m[*] [0mFuzzing test case #24 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=50, weight=1, favorite=1, was_fuzzed=1, exec_us=7999, hits=0, map=48, ascii=0, run_time=0:00:00:45)...[0m
+[1;94m[*] [0mFuzzing test case #41 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2248, hits=0, map=48, ascii=0, run_time=0:00:00:46)...[0m
+[1;94m[*] [0mFuzzing test case #56 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=3175, hits=0, map=55, ascii=0, run_time=0:00:00:46)...[0m
+[1;94m[*] [0mFuzzing test case #61 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2829, hits=0, map=55, ascii=0, run_time=0:00:00:47)...[0m
+[1;94m[*] [0mFuzzing test case #65 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2368, hits=0, map=55, ascii=0, run_time=0:00:00:48)...[0m
+[1;94m[*] [0mFuzzing test case #67 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=75, weight=1, favorite=1, was_fuzzed=1, exec_us=4390, hits=0, map=55, ascii=0, run_time=0:00:00:49)...[0m
+[1;94m[*] [0mEntering queue cycle 6
+[0m
+[1;94m[*] [0mFuzzing test case #0 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=150, weight=1, favorite=1, was_fuzzed=1, exec_us=1518, hits=0, map=55, ascii=0, run_time=0:00:00:50)...[0m
+[1;94m[*] [0mFuzzing test case #1 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=1635, hits=0, map=54, ascii=0, run_time=0:00:00:51)...[0m
+[1;94m[*] [0mFuzzing test case #10 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=2499, hits=0, map=53, ascii=0, run_time=0:00:00:52)...[0m
+[1;94m[*] [0mFuzzing test case #15 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=3261, hits=0, map=54, ascii=0, run_time=0:00:00:53)...[0m
+[1;94m[*] [0mFuzzing test case #23 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2585, hits=0, map=58, ascii=0, run_time=0:00:00:54)...[0m
+[1;94m[*] [0mFuzzing test case #24 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=50, weight=1, favorite=1, was_fuzzed=1, exec_us=7999, hits=0, map=48, ascii=0, run_time=0:00:00:55)...[0m
+[1;94m[*] [0mFuzzing test case #41 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2248, hits=0, map=48, ascii=0, run_time=0:00:00:56)...[0m
+[1;94m[*] [0mFuzzing test case #61 (80 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=2829, hits=0, map=55, ascii=0, run_time=0:00:00:56)...[0m
+[1;94m[*] [0mFuzzing test case #80 (81 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=218230, hits=0, map=35, ascii=0, run_time=0:00:01:30)...[0m
+[?25h[1;91m
+
++++ Testing aborted by user +++
+[0m[1;94m[*] [0mStatistics: 2 new corpus items found, 31.95% coverage achieved, 0 crashes saved, 0 timeouts saved, total runtime 0 days, 0 hrs, 1 min, 57 sec[0m
+[1;92m[+] [0mWe're done here. Have a nice day!
+[0m

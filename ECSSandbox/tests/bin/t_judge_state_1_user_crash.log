@@ -1,0 +1,10 @@
+样本                                                   判定       观测
+----------------------------------------------------------------------------------------------------
+c1_pass_crash.raw                                    靶机死亡     靶机死亡 rc=-6   payload='PASS CRASH\\r\\n'
+c2_pass_crash_variant.raw                            靶机死亡     靶机死亡 rc=-6   payload='PASS CRASHwrong\\r\\n'
+c3_multiline.raw                                     靶机死亡     靶机死亡 rc=-6   payload='PASS\\r\\nPASS CRASH\\r\\n'
+f_id:000000_sig:06_src:000000_time:35092_execs:4456_op:havoc_rep:1 靶机死亡     靶机死亡 rc=-6   payload='PASS CRASHwrong\\r\\n'
+f_id:000000_sig:06_src:000000_time:5113_execs:854_op:havoc_rep:2 靶机死亡     靶机死亡 rc=-6   payload='PASS CRASH122456\\r\\n'
+f_id:000001_sig:06_src:000000_time:21630_execs:3631_op:havoc_rep:1 靶机死亡     靶机死亡 rc=-6   payload='PASS CRASH6\\r\\n'
+----------------------------------------------------------------------------------------------------
+合计 6  符合预期=6  违背预期=0  跳过=0

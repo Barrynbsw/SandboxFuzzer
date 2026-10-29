@@ -1,0 +1,178 @@
+[1;92m[+] [0mEnabled environment variable AFL_SKIP_CPUFREQ with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_AFFINITY with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_UI with value 1[0m
+[0;36mafl-fuzz++4.21c[0m based on afl by Michal Zalewski and a large online community
+[1;92m[+] [0mAFL++ is maintained by Marc "van Hauser" Heuse, Dominik Maier, Andrea Fioraldi and Heiko "hexcoder" Eißfeldt[0m
+[1;92m[+] [0mAFL++ is open source, get it at https://github.com/AFLplusplus/AFLplusplus[0m
+[1;92m[+] [0mNOTE: AFL++ >= v3 has changed defaults and behaviours - see README.md[0m
+[1;94m[*] [0mGetting to work...[0m
+[1;92m[+] [0mUsing exploration-based constant power schedule (EXPLORE)[0m
+[1;92m[+] [0mEnabled testcache with 50 MB[0m
+[1;92m[+] [0mGenerating fuzz data with a length of min=1 max=1048576[0m
+[1;94m[*] [0mChecking core_pattern...[0m
+
+[1;91m[-] [0mHmm, your system is configured to send core dump notifications to an
+    external utility. This will cause issues: there will be an extended delay
+    between stumbling upon a crash and having this information relayed to the
+    fuzzer via the standard waitpid() API.
+    If you're just testing, set 'AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1'.
+
+    To avoid having crashes misinterpreted as timeouts, please log in as root
+    and temporarily modify /proc/sys/kernel/core_pattern, like so:
+
+    echo core >/proc/sys/kernel/core_pattern
+[1;92m[+] [0mDisabling the UI because AFL_NO_UI is set.[0m
+[1;92m[+] [0mYou have 8 CPU cores and 4 runnable tasks (utilization: 50%).[0m
+[1;92m[+] [0mTry parallel jobs - see /usr/local/share/doc/afl/fuzzing_in_depth.md#c-using-multiple-cores[0m
+[1;94m[*] [0mSetting up output directories...[0m
+[1;93m[!] [1;97mWARNING: [0mNot binding to a CPU core (AFL_NO_AFFINITY set).[0m
+[1;94m[*] [0mScanning '/sandbox/corpus/lightftp_state_2_auth/init_shards/0'...[0m
+[1;92m[+] [0mLoaded a total of 24 seeds.[0m
+[1;94m[*] [0mCreating hard links for all input files...[0m
+[1;94m[*] [0mValidating target binary...[0m
+[1;92m[+] [0m[1;95mPersistent mode binary detected.[0m
+[1;92m[+] [0m[1;95mDeferred forkserver binary detected.[0m
+[1;94m[*] [0mSpinning up the fork server...[0m
+[1;92m[+] [0mAll right - new fork server model v1 is up.[0m
+[1;94m[*] [0mTarget map size: 239[0m
+[1;94m[*] [0mUsing SHARED MEMORY FUZZING feature.[0m
+[1;94m[*] [0mNo auto-generated dictionary tokens to reuse.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000000,time:0,execs:0,orig:0178357bf34e2e36_prev_002.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 4, map size = 61, exec speed = 1749 us, hash = 85a3d13bf7da5ccd
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000001,time:0,execs:0,orig:2c447d0f112cc7e3_prev_008.raw'...[0m
+[1;90m    len = 11, map size = 56, exec speed = 2440 us, hash = dc256c484c5158aa
+[0m[1;94m[*] [0mAttempting dry run with 'id:000002,time:0,execs:0,orig:3caab503e6082f34_prev_014.raw'...[0m
+[1;90m    len = 19, map size = 62, exec speed = 2205 us, hash = e6607f7c74024f48
+[0m[1;94m[*] [0mAttempting dry run with 'id:000003,time:0,execs:0,orig:3dec9c302de1fa50_prev_015.raw'...[0m
+[1;90m    len = 19, map size = 56, exec speed = 2181 us, hash = dc256c484c5158aa
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000004,time:0,execs:0,orig:59c9e4824e084842_prev_022.raw'...[0m
+[1;90m    len = 73, map size = 60, exec speed = 3169 us, hash = 495b09de371f5a42
+[0m[1;94m[*] [0mAttempting dry run with 'id:000005,time:0,execs:0,orig:5c9a231f67a30942_prev_023.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 72, map size = 61, exec speed = 4136 us, hash = 8bc06ecde480cb78
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000006,time:0,execs:0,orig:5e2dcd917ca3bdc9_prev_024.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 5, map size = 62, exec speed = 3994 us, hash = e6607f7c74024f48
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000007,time:0,execs:0,orig:606209463f04b5d9_prev_026.raw'...[0m
+[1;90m    len = 19, map size = 60, exec speed = 3533 us, hash = 495b09de371f5a42
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000008,time:0,execs:0,orig:636cdb9c3dfc4f5f_prev_027.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 60, exec speed = 2825 us, hash = 495b09de371f5a42
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000009,time:0,execs:0,orig:63774a6ea59f2e78_prev_028.raw'...[0m
+[1;90m    len = 136, map size = 61, exec speed = 3093 us, hash = 5a947715f2906c0b
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000010,time:0,execs:0,orig:699dfca4646e61f2_prev_029.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 56, exec speed = 8415 us, hash = eab862c5b879a38a
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000011,time:0,execs:0,orig:7ba5d29fe543c75e_prev_036.raw'...[0m
+[1;90m    len = 18, map size = 61, exec speed = 4833 us, hash = dda5527f5f98315d
+[0m[1;94m[*] [0mAttempting dry run with 'id:000012,time:0,execs:0,orig:7e18bd4e171d98be_prev_037.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 60, exec speed = 4790 us, hash = 495b09de371f5a42
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000013,time:0,execs:0,orig:7f8d7a87de9a4dcc_prev_038.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 72, map size = 62, exec speed = 3552 us, hash = f5aca8edbfe306e0
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000014,time:0,execs:0,orig:84f81c54009f2175_prev_039.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 8, map size = 60, exec speed = 2942 us, hash = 495b09de371f5a42
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000015,time:0,execs:0,orig:97582314587711c1_prev_043.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 8, map size = 61, exec speed = 2738 us, hash = 8569c7a06591f636
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000016,time:0,execs:0,orig:a311491ab25f18bc_prev_046.raw'...[0m
+[1;90m    len = 6, map size = 56, exec speed = 3315 us, hash = dc256c484c5158aa
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000017,time:0,execs:0,orig:a45c972871c7179f_prev_047.raw'...[0m
+[1;90m    len = 85, map size = 61, exec speed = 3128 us, hash = d1b26f6d2fabbf2a
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000018,time:0,execs:0,orig:ab93cb52d7bcd12c_prev_050.raw'...[0m
+[1;90m    len = 21, map size = 56, exec speed = 9380 us, hash = eab862c5b879a38a
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000019,time:0,execs:0,orig:b0258d51e46b4e04_prev_053.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 43, map size = 61, exec speed = 3627 us, hash = bdcce0b8c489bf3d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000020,time:0,execs:0,orig:d0303ff8b600dbbf_prev_064.raw'...[0m
+[1;90m    len = 72, map size = 56, exec speed = 4168 us, hash = dc256c484c5158aa
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000021,time:0,execs:0,orig:e8cbaecc75526895_prev_069.raw'...[0m
+[1;90m    len = 46, map size = 56, exec speed = 9385 us, hash = eab862c5b879a38a
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000022,time:0,execs:0,orig:ead80dbf24b1ef9a_prev_070.raw'...[0m
+[1;90m    len = 14, map size = 61, exec speed = 3699 us, hash = dda5527f5f98315d
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000023,time:0,execs:0,orig:f05867cd20d81a61_prev_073.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 72, map size = 60, exec speed = 3591 us, hash = d1b26f6d2fabbf2a
+[0m[1;93m[!] [1;97mWARNING: [0mNo new instrumentation output, test case may be useless.[0m
+[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;92m[+] [0mAll test cases processed.[0m
+[1;93m[!] [1;97mWARNING: [0m[1;91mSome test cases look useless. Consider using a smaller set.[0m
+[1;93m[!] [1;97mWARNING: [0mYou have lots of input files; try starting small.[0m
+[1;92m[+] [0mHere are some useful stats:
+
+[1;90m    Test case count : [0m8 favored, 11 variable, 12 ignored, 24 total
+[1;90m       Bitmap range : [0m56 to 62 bits (average: 59.42 bits)
+[1;90m        Exec timing : [0m1749 to 8415 us (average: 3991 us)
+[0m
+[1;94m[*] [0m-t option specified. We'll use an exec timeout of 1000 ms.[0m
+[1;92m[+] [0mAll set and ready to roll![0m
+[1;94m[*] [0mEntering queue cycle 1
+[0m
+[1;94m[*] [0mFuzzing test case #0 (24 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=1749, hits=0, map=61, ascii=0, run_time=0:00:00:00)...[0m
+[1;94m[*] [0mFuzzing test case #6 (24 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3994, hits=0, map=62, ascii=0, run_time=0:00:00:02)...[0m
+[1;94m[*] [0mFuzzing test case #10 (24 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=8415, hits=0, map=56, ascii=0, run_time=0:00:00:03)...[0m
+[1;94m[*] [0mFuzzing test case #13 (24 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3552, hits=0, map=62, ascii=0, run_time=0:00:00:04)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #15 (25 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=2738, hits=0, map=61, ascii=0, run_time=0:00:00:05)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #16 (34 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3315, hits=0, map=56, ascii=0, run_time=0:00:00:11)...[0m
+[1;94m[*] [0mFuzzing test case #22 (34 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3699, hits=0, map=61, ascii=0, run_time=0:00:00:13)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #23 (36 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3591, hits=0, map=60, ascii=0, run_time=0:00:00:17)...[0m
+[1;94m[*] [0mFuzzing test case #25 (36 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=2461, hits=0, map=72, ascii=0, run_time=0:00:00:18)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #26 (38 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3066, hits=0, map=75, ascii=0, run_time=0:00:00:26)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #33 (54 total, 2 crashes saved, state: final phase, mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3475, hits=0, map=76, ascii=0, run_time=0:00:11:47)...[0m
+[1;94m[*] [0mFuzzing test case #38 (54 total, 2 crashes saved, state: final phase, mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3683, hits=0, map=62, ascii=0, run_time=0:00:15:06)...[0m
+[1;94m[*] [0mFuzzing test case #40 (54 total, 2 crashes saved, state: finished..., mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=4620, hits=0, map=61, ascii=0, run_time=0:00:18:15)...[0m
+[?25h[1;91m
+
++++ Testing aborted by user +++
+[0m[1;94m[*] [0mStatistics: 30 new corpus items found, 55.65% coverage achieved, 2 crashes saved, 7 timeouts saved, total runtime 0 days, 0 hrs, 19 min, 52 sec[0m
+[1;92m[+] [0mWe're done here. Have a nice day!
+[0m

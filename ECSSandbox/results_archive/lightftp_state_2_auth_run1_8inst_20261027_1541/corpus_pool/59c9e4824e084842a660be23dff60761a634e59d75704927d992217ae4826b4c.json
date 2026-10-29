@@ -1,0 +1,10 @@
+{
+  "sha256": "59c9e4824e084842a660be23dff60761a634e59d75704927d992217ae4826b4c",
+  "size": 73,
+  "found_by": "i6/fuzzer_6",
+  "original_name": "id:000013,src:000004,time:384499,execs:6921,op:havoc,rep:10,+cov",
+  "is_crash": false,
+  "state": "lightftp_state_2_auth",
+  "owner": 2,
+  "ts": 1793086547.596511
+}

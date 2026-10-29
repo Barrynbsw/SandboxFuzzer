@@ -1,0 +1,3 @@
+iters=6000
+avg_us connect=87 banner=425 prefix=258 payload=1355 probe=959 misc=0 total=3085
+partial

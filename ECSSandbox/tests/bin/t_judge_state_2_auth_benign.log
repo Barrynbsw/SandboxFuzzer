@@ -1,0 +1,10 @@
+样本                                                   判定       观测
+----------------------------------------------------------------------------------------------------
+b1_stor_ok.raw                                       靶机存活     靶机存活   payload='STOR test.txt\\r\\n'
+b2_multiline_benign.raw                              靶机存活     靶机存活   payload='HELP\\r\\nSTOR test.txt\\r\\n'
+b3_retr.raw                                          靶机存活     靶机存活   payload='RETR file\\r\\n'
+b4_stor_case.raw                                     靶机存活     靶机存活   payload='STOR BuG\\r\\n'
+b5_stor_wrongprefix.raw                              靶机存活     靶机存活   payload='STOR XBUG\\r\\n'
+b6_multiline_benign2.raw                             靶机存活     靶机存活   payload='NOOP\\r\\nSTOR test.txt\\r\\n'
+----------------------------------------------------------------------------------------------------
+合计 6  符合预期=6  违背预期=0  跳过=0

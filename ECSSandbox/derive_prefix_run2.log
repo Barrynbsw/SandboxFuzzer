@@ -1,0 +1,72 @@
+[*] 消息序列 N=6
+    M0: b'USER admin\r\n'
+    M1: b'PASS 123456\r\n'
+    M2: b'PWD\r\n'
+    M3: b'CWD /\r\n'
+    M4: b'NOOP\r\n'
+    M5: b'TYPE I\r\n'
+
+[*] 启动目标采集覆盖率: /sbfpkg/ECSSandbox/targets/lightftp.sh 9851
+[*] 基准自身覆盖（每条消息处理时点亮的边数）:
+    M0 b'USER admin\r\n'            →   14 边
+    M1 b'PASS 123456\r\n'           →   37 边
+    M2 b'PWD\r\n'                   →   13 边
+    M3 b'CWD /\r\n'                 →   26 边
+    M4 b'NOOP\r\n'                  →   13 边
+    M5 b'TYPE I\r\n'                →   15 边
+    remove M0: M1 DIFF(med)=0.3500  ← 依赖
+    remove M0: M2 DIFF(med)=0.1429  ← 依赖
+    remove M0: M3 DIFF(med)=0.5185  ← 依赖
+    remove M0: M4 DIFF(med)=0.0000
+    remove M0: M5 DIFF(med)=0.2353  ← 依赖
+    remove M1: M2 DIFF(med)=0.1429  ← 依赖
+    remove M1: M3 DIFF(med)=0.5185  ← 依赖
+    remove M1: M4 DIFF(med)=0.0000
+    remove M1: M5 DIFF(med)=0.2353  ← 依赖
+    remove M2: M3 DIFF(med)=0.0000
+    remove M2: M4 DIFF(med)=0.0000
+    remove M2: M5 DIFF(med)=0.0625  ← 依赖
+    remove M3: M4 DIFF(med)=0.0000
+    remove M3: M5 DIFF(med)=0.0625  ← 依赖
+    remove M4: M5 DIFF(med)=0.0625  ← 依赖
+[Rebuild] 依赖矩阵: {0: [1, 2, 3, 5], 1: [2, 3, 5], 2: [5], 3: [5], 4: [5]}
+[Rebuild] 会话级前置集 = [0, 1, 2, 3, 4]
+
+[*] 逐目标命令求最短保序前置序列
+    目标 USER  前置=[]  RFC真值=[]  OK
+    目标 PASS  前置=['USER']  RFC真值=['USER']  OK
+    目标 PWD   前置=['USER', 'PASS']  RFC真值=['PASS', 'USER']  OK
+    目标 CWD   前置=['USER', 'PASS']  RFC真值=['PASS', 'USER']  OK
+    目标 NOOP  前置=[]  RFC真值=[]  OK
+    目标 TYPE  前置=['USER', 'PASS']  RFC真值=['PASS', 'USER']  OK
+
+[*] 会话前缀重建结果:
+    δ 校准    : δ=0.0200  噪声地板(中位)=0.0000
+    依赖矩阵  : {0: [1, 2, 3, 5], 1: [2, 3, 5], 2: [5], 3: [5], 4: [5]}
+    会话级前置: [0, 1, 2, 3, 4]  → ['USER', 'PASS', 'PWD', 'CWD', 'NOOP']
+    NeedSplit : True   AllSplit: False
+    最弱依赖信号: [('M2→M5', 0.062), ('M3→M5', 0.062), ('M4→M5', 0.062), ('M0→M2', 0.143)]
+
+[*] 按目标命令导出状态到 prefix_analyzer_output_rebuild/
+    admin_ftp_state_0_USER
+        prefix.raw = b''  (0B, 0 条)  RFC真值=[] OK
+        seeds/     = 2 个
+    admin_ftp_state_1_PASS
+        prefix.raw = b'USER admin\r\n'  (12B, 1 条)  RFC真值=['USER'] OK
+        seeds/     = 3 个
+    admin_ftp_state_2_PWD
+        prefix.raw = b'USER admin\r\nPASS 123456\r\n'  (25B, 2 条)  RFC真值=['PASS', 'USER'] OK
+        seeds/     = 6 个
+    admin_ftp_state_3_CWD
+        prefix.raw = b'USER admin\r\nPASS 123456\r\n'  (25B, 2 条)  RFC真值=['PASS', 'USER'] OK
+        seeds/     = 6 个
+    admin_ftp_state_4_NOOP
+        prefix.raw = b''  (0B, 0 条)  RFC真值=[] OK
+        seeds/     = 2 个
+    admin_ftp_state_5_TYPE
+        prefix.raw = b'USER admin\r\nPASS 123456\r\n'  (25B, 2 条)  RFC真值=['PASS', 'USER'] OK
+        seeds/     = 6 个
+
+[*] 元信息写到 prefix_analyzer_output_rebuild/admin_ftp_prefix_meta.txt
+[*] 导出 6 个状态，与 RFC 真值一致 6/6
+[*] 跑法:  ./run_state_node.sh admin_ftp_state_0_USER 2 300

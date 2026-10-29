@@ -1,0 +1,74 @@
+[TARGET] 适配器: targets/stateful_server.conf
+         名称=stateful_server  覆盖率=both  位图=65536B
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         state_1_user   ← 全机统一，可切换
+  实例数:       2（各自独立 outdir，互不盲同步）
+  靶机端口:     9420 .. 9421
+  共享种子池:   /sbfpkg/ECSSandbox/corpus/state_1_user
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+         靶机  stateful_server.c → ./stateful_server
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[STATE] node_state.current = state_1_user
+[LAUNCH] 启动 2 个状态同质沙箱...
+    [0] port=9420  SHM_ID=1  server_loop=137
+    [1] port=9421  SHM_ID=2  server_loop=142
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 2 切分初始语料...
+[seedhub] 初始语料崩溃样本 → crashes/  s1_3.raw   f2df1554f49e7549
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：2 个正常种子 → 2 个分片  崩溃样本=1  占位=1
+[seedhub] 池=2  分片=[0, 2]  合计=2  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9420  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9421  -i <分片1>  -F work/<state>/1
+
+[RUN] 2 个 AFL++ 实例运行中（状态同质：state_1_user）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=152
+
+[RUN] 将在 12s 后自动停止...
+
+============================================
+  状态 state_1_user — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       684          58.15      7          0            22.59%     54      
+fuzzer_1       676          58.19      14         0            24.27%     58      
+
+  ─── 去重分工核查 ───
+[seedhub] 池=21  分片=[10, 11]  合计=21  重复=0  发现者残留=9
+
+  共享种子池: /sbfpkg/ECSSandbox/corpus/state_1_user
+  分片投喂:   /sbfpkg/ECSSandbox/work/state_1_user/<0..1>
+  崩溃归档:   /sbfpkg/ECSSandbox/corpus/state_1_user/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 启动  state=state_1_user  实例数=2  owner模式=hash
+[seedhub] 公共池: /sbfpkg/ECSSandbox/corpus/state_1_user
+[seedhub] 投喂目录: /sbfpkg/ECSSandbox/work/state_1_user/<0..1>  (-F 指向)
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=1
+[seedhub] 池=3  分片=[0, 3]  合计=3  重复=0  发现者残留=1
+[seedhub] 新入库 优质种子=6  崩溃=0
+[seedhub] 重新分片  投喂+6  收回0  发现者残留=3
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=5
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=5
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=8
+[seedhub] 池=18  分片=[9, 9]  合计=18  重复=0  发现者残留=8
+[seedhub] 池=21  分片=[10, 11]  合计=21  重复=0  发现者残留=9
+[seedhub] 已停止

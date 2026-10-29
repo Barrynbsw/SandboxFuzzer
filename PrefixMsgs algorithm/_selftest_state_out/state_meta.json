@@ -1,0 +1,191 @@
+{
+  "protocol": "ftp",
+  "state_mode": "code",
+  "n_messages": 5,
+  "state_set": [
+    "331",
+    "230",
+    "257",
+    "150",
+    "226",
+    "221"
+  ],
+  "n_states": 6,
+  "state_seeds": {
+    "331": [
+      0
+    ],
+    "230": [
+      1
+    ],
+    "257": [
+      2
+    ],
+    "150": [
+      3
+    ],
+    "226": [
+      3
+    ],
+    "221": [
+      4
+    ]
+  },
+  "seeds_states": {
+    "0": [
+      "331"
+    ],
+    "1": [
+      "230"
+    ],
+    "2": [
+      "257"
+    ],
+    "3": [
+      "150",
+      "226"
+    ],
+    "4": [
+      "221"
+    ]
+  },
+  "ipsm": {
+    "<INIT>": {
+      "331": 1
+    },
+    "331": {
+      "230": 1
+    },
+    "230": {
+      "257": 1
+    },
+    "257": {
+      "226": 1
+    },
+    "226": {
+      "221": 1
+    }
+  },
+  "transitions": {
+    "<INIT> -> 331": 1,
+    "331 -> 230": 1,
+    "230 -> 257": 1,
+    "257 -> 226": 1,
+    "226 -> 221": 1
+  },
+  "prefix_msg_indices": [
+    0,
+    1
+  ],
+  "need_split": true,
+  "all_split": false,
+  "split_by": "message",
+  "files": [
+    {
+      "file": "pre_000.msg",
+      "kind": "message",
+      "msg_index": 0,
+      "len": 10
+    },
+    {
+      "file": "pre_001.msg",
+      "kind": "message",
+      "msg_index": 1,
+      "len": 10
+    },
+    {
+      "file": "seed_000.msg",
+      "kind": "message",
+      "msg_index": 2,
+      "len": 5
+    },
+    {
+      "file": "seed_001.msg",
+      "kind": "message",
+      "msg_index": 3,
+      "len": 6
+    },
+    {
+      "file": "seed_002.msg",
+      "kind": "message",
+      "msg_index": 4,
+      "len": 6
+    }
+  ],
+  "states_detail": [
+    {
+      "key": "331",
+      "first_seen": 0,
+      "hit_count": 1,
+      "seed_ids": [
+        0
+      ]
+    },
+    {
+      "key": "230",
+      "first_seen": 1,
+      "hit_count": 1,
+      "seed_ids": [
+        1
+      ]
+    },
+    {
+      "key": "257",
+      "first_seen": 2,
+      "hit_count": 1,
+      "seed_ids": [
+        2
+      ]
+    },
+    {
+      "key": "150",
+      "first_seen": 3,
+      "hit_count": 1,
+      "seed_ids": [
+        3
+      ]
+    },
+    {
+      "key": "226",
+      "first_seen": 3,
+      "hit_count": 1,
+      "seed_ids": [
+        3
+      ]
+    },
+    {
+      "key": "221",
+      "first_seen": 4,
+      "hit_count": 1,
+      "seed_ids": [
+        4
+      ]
+    }
+  ],
+  "rare_states": [
+    {
+      "state": "331",
+      "hit": 1
+    },
+    {
+      "state": "230",
+      "hit": 1
+    },
+    {
+      "state": "257",
+      "hit": 1
+    },
+    {
+      "state": "150",
+      "hit": 1
+    },
+    {
+      "state": "226",
+      "hit": 1
+    },
+    {
+      "state": "221",
+      "hit": 1
+    }
+  ]
+}
