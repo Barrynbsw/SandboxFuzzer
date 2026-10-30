@@ -97,6 +97,7 @@ class TcpShmOracle:
         self.start_timeout = start_timeout
         self._proc: subprocess.Popen | None = None
         self._shm: Shm | None = None
+        self._bg: Coverage = frozenset()   # 会话簿记边集，见 _sample_background
 
     # ── 进程生命周期 ──────────────────────────────────────────────
     def start(self) -> None:
@@ -115,11 +116,84 @@ class TcpShmOracle:
                 s.settimeout(0.2)
                 s.connect((self.host, self.port))
                 s.close()
+                self._bg = self._sample_background()
+                if self._bg:
+                    print(f"[shm] 会话簿记边集 = {sorted(self._bg)}"
+                          f"（{len(self._bg)} 条），每次快照自动扣除",
+                          flush=True)
                 return
             except OSError:
                 time.sleep(0.05)
         self.stop()
         raise RuntimeError(f"目标起不来: {self.target_cmd} :{self.port}")
+
+    def _sample_background(self, seconds: float = 1.2) -> Coverage:
+        """采「会话簿记」点亮的边 —— 这些边不属于任何一条消息。
+
+        多线程靶机有【常驻的并发线程】往同一个 SHM 落笔：LightFTP 的 ftpmain
+        监听线程（main.c:185 pthread_create）和每连接的 ftp_client_thread
+        并发跑。实测只有一条边（834）会这样漏进来，但它总在【消息处理中途】
+        冒出来 —— `_quiesce` 等不掉，因为那是活线程在跑，不是退出线程的残留。
+
+        后果与退出线程污染同形：DIFF 恰好 = 1/|Cov|，看着像一条稳定的弱依赖，
+        实测能把会话级前置集从 [USER, PASS] 撑成 5 条假阳性，而且重跑又变回去。
+
+        关键：这条边只在【有连接进出】时才走得到（accept / 建线程 / 线程退出）。
+        所以纯空转采样大概率采不到它 —— 必须自己制造连接抖动才采得全。
+        分两段采，取并集：
+
+            阶段 1  空转窗口：抓周期性/纯后台分支
+            阶段 2  连接抖动：反复 connect→close（一条消息都不发），
+                    抓 accept / 建线程 / 线程退出这条簿记路径
+
+        采出来之后每次快照都把它【减掉】（见 _snap）。减掉是安全的：base 与
+        drop 两次测量减的是同一个集合，cov_diff 不受影响；只有 union_size
+        会略微变小，影响不到 edge_threshold 的量级。
+
+        这是第一道防线；第二道是算法侧的共识核（consensus，多数票）。
+        """
+        if self._shm is None:
+            return frozenset()
+        acc: set = set()
+        deadline = time.time() + seconds
+
+        # 阶段 1：空转 —— 什么都不发，只看靶机自己在写什么
+        while time.time() < deadline:
+            self._shm.zero()
+            time.sleep(0.02)
+            acc |= self._shm.snapshot()
+
+        # 阶段 2：连接抖动 —— 连上就读掉 banner 再关，一条命令都不发
+        deadline = time.time() + seconds
+        while time.time() < deadline:
+            self._shm.zero()
+            try:
+                s = socket.socket()
+                s.settimeout(0.3)
+                s.connect((self.host, self.port))
+                if self.banner_lines > 0:
+                    got, buf = 0, b""
+                    while got < self.banner_lines:
+                        chunk = s.recv(256)
+                        if not chunk:
+                            break
+                        buf += chunk
+                        got = buf.count(b"\n")
+                s.close()
+            except OSError:
+                pass
+            time.sleep(0.03)      # 等客户端线程走完退出路径再采
+            acc |= self._shm.snapshot()
+
+        self._shm.zero()
+        return frozenset(acc)
+
+    def _snap(self) -> Coverage:
+        """快照并减去后台边集 —— 只留本条消息点亮的边。"""
+        cur = self._shm.snapshot()
+        if not self._bg:
+            return cur
+        return frozenset(cur - self._bg)
 
     def stop(self) -> None:
         if self._proc is not None and self._proc.poll() is None:
@@ -182,8 +256,10 @@ class TcpShmOracle:
         实测能把会话级前置集从 [USER, PASS] 撑成 5 条假阳性。
 
         做法：清零 SHM，轮询到连续 window 秒没有新边才认为静默。
+
+        SBF_NO_QUIESCE=1 可以关掉（仅供回归探针验证它有牙齿，别在正式测量里用）。
         """
-        if self._shm is None:
+        if self._shm is None or os.environ.get("SBF_NO_QUIESCE"):
             return
         self._shm.zero()
         deadline = time.time() + timeout
@@ -223,7 +299,7 @@ class TcpShmOracle:
                 self._shm.zero()      # 只留【本条处理】点亮的边
                 s.sendall(b)
                 self._drain(s)        # 等服务端处理完再采，见 _drain 注释
-                out.append(self._shm.snapshot())
+                out.append(self._snap())
         finally:
             s.close()
             self._quiesce()           # 等退出线程落完笔，别污染下一条会话
@@ -268,7 +344,7 @@ class TcpShmOracle:
             self._shm.zero()
             s.sendall(blob)
             self._drain(s)
-            return self._shm.snapshot()
+            return self._snap()
         finally:
             s.close()
             self._quiesce()           # 等退出线程落完笔，别污染下一条会话
@@ -279,7 +355,7 @@ class TcpShmOracle:
 
     # ── 响应码采集（真值 oracle，与覆盖率完全独立）─────────────────
     def run_sequence_with_replies(
-        self, blobs: Sequence[bytes]
+        self, blobs: Sequence[bytes], repeats: int = 3
     ) -> list[tuple[Coverage, str]]:
         """同一条会话逐条发，返回 (本条自身覆盖率, 本条响应码)。
 
@@ -289,7 +365,32 @@ class TcpShmOracle:
         为什么要有这个：覆盖率推断出的"依赖"必须有一个【与覆盖率无关】的
         真值来校验。响应码就是那个真值 —— i 是 j 的前置 ⟺ 去掉 i 后 j 的
         响应码变了。审稿人可以拿 RFC 逐条核对。
+
+        repeats 条独立会话取【多数票】（审查 L4：真值单次测量时，一次调度/
+        网络抖动抖错一个码，就凭空造出或抹掉一条依赖边）。按响应码投票、
+        平票取先出现的 —— 不能按应答原文投：PASV 的 227 里带临时端口号，
+        每次都不一样，按原文投会三票分裂。覆盖率取第一条会话的，本接口只供
+        响应码真值，要覆盖走 run_sequence（它有自己的共识核）。
         """
+        reps = max(1, int(repeats))
+        runs = [self._run_sequence_once(blobs) for _ in range(reps)]
+        if reps == 1:
+            return runs[0]
+        out: list[tuple[Coverage, str]] = []
+        for pos in range(len(runs[0])):
+            codes = [self.response_code(r[pos][1]) for r in runs]
+            counts: dict[str, int] = {}
+            for c in codes:
+                counts[c] = counts.get(c, 0) + 1
+            best = max(codes, key=lambda c: counts[c])   # 平票取先出现
+            reply = next(r[pos][1] for r, c in zip(runs, codes) if c == best)
+            out.append((runs[0][pos][0], reply))
+        return out
+
+    def _run_sequence_once(
+        self, blobs: Sequence[bytes]
+    ) -> list[tuple[Coverage, str]]:
+        """一条独立会话逐条发一遍（run_sequence_with_replies 的单次测量）。"""
         if self._shm is None or self._proc is None:
             raise RuntimeError("先调用 start()")
         if self._proc.poll() is not None:
@@ -303,28 +404,68 @@ class TcpShmOracle:
                 self._shm.zero()
                 s.sendall(b)
                 reply = self._drain_collect(s)
-                out.append((self._shm.snapshot(), reply))
+                out.append((self._snap(), reply))
         finally:
             s.close()
             self._quiesce()           # 等退出线程落完笔，别污染下一条会话
         return out
 
     def _drain_collect(self, s: socket.socket) -> str:
-        """读到静默，返回应答文本（供提取响应码）。"""
+        """读满一条【完整应答】，返回应答文本（供提取响应码）。
+
+        「收满」按 RFC 959 §4.2 的多行规则判（审查 L4）：单行 '214 xxx' 一行
+        即满；多行 '214-...' 要读到 '214 ' 结束行才算完。早先只按 settle 静默
+        判行，HELP 这类多行应答行间隔超过 20ms 就被截断 —— response_code 对
+        半截文本取末行规则会得 ''/错码，真值直接被污染。
+
+        settle 只作兜底：完全无应答（半死靶机）不干等；多行行间隔用总期限
+        （≥1s）桥接。正常路径靠结束行判满，单行应答反而比静默判行快。
+        """
         s.settimeout(self.settle)
         buf = b""
+        deadline = time.time() + max(1.0, self.settle * 10)
         try:
-            while True:
-                chunk = s.recv(4096)
-                if not chunk:
+            while not self._reply_complete(buf):
+                if time.time() > deadline:
                     break
+                try:
+                    chunk = s.recv(4096)
+                except socket.timeout:
+                    if not buf:
+                        break             # 无应答，别干等
+                    continue              # 多行行间隔：继续等结束行
+                if not chunk:
+                    break                 # 对端关连接
                 buf += chunk
-        except socket.timeout:
-            pass
         except OSError:
+            pass
+        # 残留排空：留在缓冲里的尾巴会被下一条的采集误认成本条应答
+        s.settimeout(0.005)
+        try:
+            while s.recv(4096):
+                pass
+        except (socket.timeout, OSError):
             pass
         s.settimeout(2.0)
         return buf.decode("latin-1", "replace")
+
+    @staticmethod
+    def _reply_complete(buf: bytes) -> bool:
+        """RFC 959 §4.2：应答收满了吗？
+
+        结束行 = 3 位数字 + 空格（或裸 3 位）；多行应答 '214-...' 的中间行
+        带 '-' 不算结束。只认 \\n 收齐的行，半行不算 —— 宁可多等一个往返，
+        不能把 '214 xxx' 的半截当成完整应答提前收工。
+        """
+        lines = buf.split(b"\n")
+        if not buf.endswith(b"\n"):
+            lines = lines[:-1]            # 最后一段可能只到了半行
+        for ln in lines:
+            ln = ln.rstrip(b"\r")
+            if len(ln) >= 3 and ln[:3].isdigit() and \
+                    (len(ln) == 3 or ln[3:4] == b" "):
+                return True
+        return False
 
     @staticmethod
     def response_code(reply: str) -> str:

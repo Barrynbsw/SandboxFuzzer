@@ -1,12 +1,13 @@
 [TARGET] 适配器: targets/stateful_server.conf
          名称=stateful_server  覆盖率=both  位图=65536B
+[STATE] state_1_user  ← prefix_analyzer_output
 ============================================
   SandboxFuzzer — 状态同质化 ECS 节点
 ============================================
   状态:         state_1_user   ← 全机统一，可切换
   实例数:       3（各自独立 outdir，互不盲同步）
   靶机端口:     9420 .. 9422
-  共享种子池:   /sbfpkg/ECSSandbox/corpus/state_1_user
+  共享种子池:   /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user
   去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
   异步回传:     关闭（Dispatcher 后续设计）
 ============================================
@@ -16,11 +17,12 @@
 [BUILD] ✓ 编译完成
 
 [CLEAN] 清理旧进程与输出...
+[ARCHIVE] 旧数据已归档: archive/state_1_user_pre_20261030-101619
 [STATE] node_state.current = state_1_user
 [LAUNCH] 启动 3 个状态同质沙箱...
-    [0] port=9420  SHM_ID=7  server_loop=226
-    [1] port=9421  SHM_ID=8  server_loop=231
-    [2] port=9422  SHM_ID=9  server_loop=236
+    [0] port=9420  SHM_ID=294927  server_loop=1700444
+    [1] port=9421  SHM_ID=294929  server_loop=1700453
+    [2] port=9422  SHM_ID=294931  server_loop=1700460
 
 [SEEDHUB] 探测崩溃样本并按 sha256 % 3 切分初始语料...
 [seedhub] 初始语料崩溃样本 → crashes/  s1_3.raw   f2df1554f49e7549
@@ -36,14 +38,12 @@
       共享种子池 + 唯一 owner 分工，无盲同步重复劳动
 
 [SEEDHUB] 启动 local_seedhub.py ...
-[SEEDHUB] PID=249
+[SEEDHUB] PID=1700499
 
 [RUN] 将在 60s 后自动停止...
 [seedhub] 启动  state=state_1_user  实例数=3  owner模式=hash
-[seedhub] 公共池: /sbfpkg/ECSSandbox/corpus/state_1_user
-[seedhub] 投喂目录: /sbfpkg/ECSSandbox/work/state_1_user/<0..2>  (-F 指向)
-[seedhub] 新入库 优质种子=1  崩溃=0
-[seedhub] 重新分片  投喂+1  收回0  发现者残留=1
-[seedhub] 池=3  分片=[2, 0, 1]  合计=3  重复=0  发现者残留=1
-[seedhub] 池=3  分片=[2, 0, 1]  合计=3  重复=0  发现者残留=1
+[seedhub] 公共池: /home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user
+[seedhub] 投喂目录: /home/barry/桌面/SandboxFuzzer/ECSSandbox/work/state_1_user/<0..2>  (-F 指向)
+[seedhub] 池=2  分片=[1, 0, 1]  合计=2  重复=0  发现者残留=0
+[seedhub] 池=2  分片=[1, 0, 1]  合计=2  重复=0  发现者残留=0
 [seedhub] 已停止

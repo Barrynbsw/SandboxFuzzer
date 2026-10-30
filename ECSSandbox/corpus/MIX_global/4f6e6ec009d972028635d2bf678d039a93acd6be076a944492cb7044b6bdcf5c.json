@@ -1,0 +1,10 @@
+{
+  "sha256": "4f6e6ec009d972028635d2bf678d039a93acd6be076a944492cb7044b6bdcf5c",
+  "size": 118,
+  "found_by": "i1/fuzzer_1",
+  "original_name": "id:000062,src:000046,time:277622,execs:75346,op:havoc,rep:7",
+  "is_crash": false,
+  "state": "MIX_global",
+  "owner": 2,
+  "ts": 1793259620.7870996
+}

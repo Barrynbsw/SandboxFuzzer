@@ -1,0 +1,1262 @@
+[ARCHIVE] 旧 ablation/ 已归档: archive/ablation_pre_20261030-022927
+[FIXTURE] A_single_state  prefix=25B  
+          seeds=6 条（与 A/B 同源）
+[FIXTURE] B_mixed_pool  prefix=0B  
+          seeds=6 条（与 A/B 同源）
+============================================
+  状态分池 ablation   时长=300s  从实例=2  轮数=3
+  控制变量：池内容/池大小/实例数/时长/AFL++ 配置 全部相同
+  唯一自变量：种子待在哪个状态池（= 用哪条前缀）
+  换序：奇数轮 A→B，偶数轮 B→A
+============================================
+[RUNS] 逐轮快照目录: ablation_runs/20261030-022927
+
+══════════ 第 1/3 轮（顺序: A_single_state B_mixed_pool）══════════
+
+──── level-1 可达比例  A_single_state ────
+池可达性  [A_single_state]
+  前缀   : b'USER admin\r\nPASS 123456\r\n'
+  种子数 : 6
+[shm] 会话簿记边集 = [172, 174, 175, 177, 178, 181, 183, 718, 721, 724, 726, 778, 792, 795, 834, 843, 845]（17 条），每次快照自动扣除
+    admin_ftp_2_1.raw        b'USER admin\r\n'      → 331      可达        
+    admin_ftp_2_2.raw        b'PASS 123456\r\n'     → 230      可达        
+    admin_ftp_2_3.raw        b'PWD\r\n'             → 257      可达        
+    admin_ftp_2_4.raw        b'CWD /\r\n'           → 250      可达        
+    admin_ftp_2_5.raw        b'NOOP\r\n'            → 200      可达        
+    admin_ftp_2_6.raw        b'TYPE I\r\n'          → 200      可达        
+  可达 6/6
+  已写 /sbfpkg/ECSSandbox/ablation/A_single_state.reach.json
+
+============================================
+  level-2 真 fuzz   A_single_state   300s × 3 实例
+============================================
+[TARGET] 适配器: targets/lightftp.conf
+         名称=fftp  覆盖率=instrument  位图=65536B
+[STATE] A_single_state  ← ablation
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         A_single_state   ← 全机统一，可切换
+  实例数:       3（各自独立 outdir，互不盲同步）
+  靶机端口:     9001 .. 9003
+  共享种子池:   /sbfpkg/ECSSandbox/corpus/A_single_state
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+         靶机  按 TARGET_BUILD_CMD 构建...
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[ARCHIVE] 旧数据已归档: archive/A_single_state_pre_20261030-022942
+[STATE] node_state.current = A_single_state
+[LAUNCH] 启动 3 个状态同质沙箱...
+    [0] port=9001  SHM_ID=1  server_loop=182
+    [1] port=9002  SHM_ID=2  server_loop=194
+    [2] port=9003  SHM_ID=3  server_loop=206
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 3 切分初始语料...
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：6 个正常种子 → 3 个分片  崩溃样本=0  占位=1
+[seedhub] 池=6  分片=[0, 1, 5]  合计=6  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9001  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9002  -i <分片1>  -F work/<state>/1
+[AFL++] fuzzer_2  port=9003  -i <分片2>  -F work/<state>/2
+
+[RUN] 3 个 AFL++ 实例运行中（状态同质：A_single_state）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=238
+
+[RUN] 将在 300s 后自动停止...
+[seedhub] 启动  state=A_single_state  实例数=3  owner模式=hash
+[seedhub] 公共池: /sbfpkg/ECSSandbox/corpus/A_single_state
+[seedhub] 投喂目录: /sbfpkg/ECSSandbox/work/A_single_state/<0..2>  (-F 指向)
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=1
+[seedhub] 池=7  分片=[0, 2, 5]  合计=7  重复=0  发现者残留=1
+[seedhub] 新入库 优质种子=16  崩溃=0
+[seedhub] 重新分片  投喂+16  收回0  发现者残留=10
+[seedhub] 新入库 优质种子=13  崩溃=0
+[seedhub] 重新分片  投喂+13  收回0  发现者残留=20
+[seedhub] 新入库 优质种子=8  崩溃=0
+[seedhub] 重新分片  投喂+8  收回0  发现者残留=25
+[seedhub] 新入库 优质种子=6  崩溃=0
+[seedhub] 重新分片  投喂+6  收回0  发现者残留=28
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=30
+[seedhub] 池=53  分片=[10, 19, 24]  合计=53  重复=0  发现者残留=30
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=31
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=34
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=35
+[seedhub] 池=62  分片=[12, 23, 27]  合计=62  重复=0  发现者残留=35
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=35
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=37
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=38
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=40
+[seedhub] 池=69  分片=[13, 26, 30]  合计=69  重复=0  发现者残留=40
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=41
+[seedhub] 池=70  分片=[13, 26, 31]  合计=70  重复=0  发现者残留=41
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=42
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=45
+[seedhub] 池=74  分片=[14, 28, 32]  合计=74  重复=0  发现者残留=45
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=46
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=47
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=47
+[seedhub] 池=77  分片=[16, 29, 32]  合计=77  重复=0  发现者残留=47
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=48
+[seedhub] 池=78  分片=[17, 29, 32]  合计=78  重复=0  发现者残留=48
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=48
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=50
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=53
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=54
+[seedhub] 池=86  分片=[19, 33, 34]  合计=86  重复=0  发现者残留=54
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=55
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=55
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=55
+[seedhub] 池=89  分片=[20, 35, 34]  合计=89  重复=0  发现者残留=55
+[seedhub] 池=89  分片=[20, 35, 34]  合计=89  重复=0  发现者残留=55
+[seedhub] 池=89  分片=[20, 35, 34]  合计=89  重复=0  发现者残留=55
+[seedhub] 池=89  分片=[20, 35, 34]  合计=89  重复=0  发现者残留=55
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=56
+[seedhub] 池=91  分片=[21, 36, 34]  合计=91  重复=0  发现者残留=56
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=57
+[seedhub] 池=92  分片=[21, 36, 35]  合计=92  重复=0  发现者残留=57
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=57
+[seedhub] 池=93  分片=[22, 36, 35]  合计=93  重复=0  发现者残留=57
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=58
+[seedhub] 池=94  分片=[22, 37, 35]  合计=94  重复=0  发现者残留=58
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=58
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=60
+[seedhub] 池=97  分片=[23, 39, 35]  合计=97  重复=0  发现者残留=60
+[seedhub] 池=97  分片=[23, 39, 35]  合计=97  重复=0  发现者残留=60
+[seedhub] 新入库 优质种子=8  崩溃=0
+[seedhub] 重新分片  投喂+8  收回0  发现者残留=62
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=62
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=63
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=63
+[seedhub] 池=108  分片=[30, 41, 37]  合计=108  重复=0  发现者残留=63
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=67
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=68
+[seedhub] 新入库 优质种子=7  崩溃=0
+[seedhub] 重新分片  投喂+7  收回0  发现者残留=73
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=74
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=77
+[seedhub] 池=127  分片=[39, 44, 44]  合计=127  重复=0  发现者残留=77
+[seedhub] 新入库 优质种子=7  崩溃=0
+[seedhub] 重新分片  投喂+7  收回0  发现者残留=82
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=83
+[seedhub] 新入库 优质种子=9  崩溃=0
+[seedhub] 重新分片  投喂+9  收回0  发现者残留=89
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=90
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=93
+[seedhub] 池=154  分片=[49, 51, 54]  合计=154  重复=0  发现者残留=93
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=93
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=97
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=97
+[seedhub] 池=160  分片=[51, 51, 58]  合计=160  重复=0  发现者残留=97
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=98
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=99
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=100
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=101
+[seedhub] 池=165  分片=[54, 53, 58]  合计=165  重复=0  发现者残留=101
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=105
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=106
+[seedhub] 新入库 优质种子=1  崩溃=0
+
+============================================
+  状态 A_single_state — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       93405        311.41     84         0            55.56%     135     
+fuzzer_1       98152        327.23     61         0            58.44%     142     
+fuzzer_2       85794        286.14     83         0            62.55%     152     
+
+  ─── 去重分工核查 ───
+[seedhub] 池=189  分片=[61, 61, 67]  合计=189  重复=0  发现者残留=120
+
+  共享种子池: /sbfpkg/ECSSandbox/corpus/A_single_state
+  分片投喂:   /sbfpkg/ECSSandbox/work/A_single_state/<0..2>
+  崩溃归档:   /sbfpkg/ECSSandbox/corpus/A_single_state/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=107
+[seedhub] 池=172  分片=[54, 57, 61]  合计=172  重复=0  发现者残留=107
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=108
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=109
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=111
+[seedhub] 池=176  分片=[56, 58, 62]  合计=176  重复=0  发现者残留=111
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=112
+[seedhub] 池=177  分片=[57, 58, 62]  合计=177  重复=0  发现者残留=112
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=113
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=116
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=117
+[seedhub] 池=184  分片=[59, 61, 64]  合计=184  重复=0  发现者残留=117
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=117
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=118
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=119
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=120
+[seedhub] 池=189  分片=[61, 61, 67]  合计=189  重复=0  发现者残留=120
+[seedhub] 池=189  分片=[61, 61, 67]  合计=189  重复=0  发现者残留=120
+[seedhub] 池=189  分片=[61, 61, 67]  合计=189  重复=0  发现者残留=120
+[seedhub] 已停止
+
+──── level-1 可达比例  B_mixed_pool ────
+池可达性  [B_mixed_pool]
+  前缀   : b''（无前缀）
+  种子数 : 6
+[shm] 会话簿记边集 = [172, 174, 175, 177, 178, 181, 183, 718, 721, 724, 726, 778, 792, 795, 834, 843, 845]（17 条），每次快照自动扣除
+    admin_ftp_2_1.raw        b'USER admin\r\n'      → 331      可达        
+    admin_ftp_2_2.raw        b'PASS 123456\r\n'     → 530      打不响         应答='530 Invalid user name or password.\r\n'
+    admin_ftp_2_3.raw        b'PWD\r\n'             → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+    admin_ftp_2_4.raw        b'CWD /\r\n'           → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+    admin_ftp_2_5.raw        b'NOOP\r\n'            → 200      可达        
+    admin_ftp_2_6.raw        b'TYPE I\r\n'          → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+  可达 2/6
+  已写 /sbfpkg/ECSSandbox/ablation/B_mixed_pool.reach.json
+
+============================================
+  level-2 真 fuzz   B_mixed_pool   300s × 3 实例
+============================================
+[TARGET] 适配器: targets/lightftp.conf
+         名称=fftp  覆盖率=instrument  位图=65536B
+[STATE] B_mixed_pool  ← ablation
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         B_mixed_pool   ← 全机统一，可切换
+  实例数:       3（各自独立 outdir，互不盲同步）
+  靶机端口:     9001 .. 9003
+  共享种子池:   /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+         靶机  按 TARGET_BUILD_CMD 构建...
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[ARCHIVE] 旧数据已归档: archive/B_mixed_pool_pre_20261030-023456
+[STATE] node_state.current = B_mixed_pool
+[LAUNCH] 启动 3 个状态同质沙箱...
+    [0] port=9001  SHM_ID=11  server_loop=556387
+    [1] port=9002  SHM_ID=12  server_loop=556399
+    [2] port=9003  SHM_ID=13  server_loop=556411
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 3 切分初始语料...
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：6 个正常种子 → 3 个分片  崩溃样本=0  占位=1
+[seedhub] 池=6  分片=[0, 1, 5]  合计=6  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9001  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9002  -i <分片1>  -F work/<state>/1
+[AFL++] fuzzer_2  port=9003  -i <分片2>  -F work/<state>/2
+
+[RUN] 3 个 AFL++ 实例运行中（状态同质：B_mixed_pool）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=556443
+
+[RUN] 将在 300s 后自动停止...
+
+============================================
+  状态 B_mixed_pool — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       100017       333.43     17         0            36.63%     89      
+fuzzer_1       96728        322.46     17         0            39.09%     95      
+fuzzer_2       103743       345.89     17         0            43.21%     105     
+
+  ─── 去重分工核查 ───
+[seedhub] 池=48  分片=[16, 13, 19]  合计=48  重复=0  发现者残留=25
+
+  共享种子池: /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+  分片投喂:   /sbfpkg/ECSSandbox/work/B_mixed_pool/<0..2>
+  崩溃归档:   /sbfpkg/ECSSandbox/corpus/B_mixed_pool/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 启动  state=B_mixed_pool  实例数=3  owner模式=hash
+[seedhub] 公共池: /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+[seedhub] 投喂目录: /sbfpkg/ECSSandbox/work/B_mixed_pool/<0..2>  (-F 指向)
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=1
+[seedhub] 池=7  分片=[0, 2, 5]  合计=7  重复=0  发现者残留=1
+[seedhub] 新入库 优质种子=11  崩溃=0
+[seedhub] 重新分片  投喂+11  收回0  发现者残留=5
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=7
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=9
+[seedhub] 池=26  分片=[8, 7, 11]  合计=26  重复=0  发现者残留=9
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=10
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=11
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=12
+[seedhub] 池=32  分片=[12, 9, 11]  合计=32  重复=0  发现者残留=12
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=14
+[seedhub] 池=34  分片=[12, 9, 13]  合计=34  重复=0  发现者残留=14
+[seedhub] 池=34  分片=[12, 9, 13]  合计=34  重复=0  发现者残留=14
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=15
+[seedhub] 池=36  分片=[12, 9, 15]  合计=36  重复=0  发现者残留=15
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=17
+[seedhub] 池=38  分片=[13, 9, 16]  合计=38  重复=0  发现者残留=17
+[seedhub] 池=38  分片=[13, 9, 16]  合计=38  重复=0  发现者残留=17
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=19
+[seedhub] 池=40  分片=[14, 9, 17]  合计=40  重复=0  发现者残留=19
+[seedhub] 池=40  分片=[14, 9, 17]  合计=40  重复=0  发现者残留=19
+[seedhub] 池=40  分片=[14, 9, 17]  合计=40  重复=0  发现者残留=19
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=20
+[seedhub] 池=41  分片=[15, 9, 17]  合计=41  重复=0  发现者残留=20
+[seedhub] 池=41  分片=[15, 9, 17]  合计=41  重复=0  发现者残留=20
+[seedhub] 池=41  分片=[15, 9, 17]  合计=41  重复=0  发现者残留=20
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=21
+[seedhub] 池=43  分片=[15, 10, 18]  合计=43  重复=0  发现者残留=21
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=22
+[seedhub] 池=45  分片=[15, 12, 18]  合计=45  重复=0  发现者残留=22
+[seedhub] 池=45  分片=[15, 12, 18]  合计=45  重复=0  发现者残留=22
+[seedhub] 池=45  分片=[15, 12, 18]  合计=45  重复=0  发现者残留=22
+[seedhub] 池=45  分片=[15, 12, 18]  合计=45  重复=0  发现者残留=22
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=23
+[seedhub] 池=46  分片=[16, 12, 18]  合计=46  重复=0  发现者残留=23
+[seedhub] 池=46  分片=[16, 12, 18]  合计=46  重复=0  发现者残留=23
+[seedhub] 池=46  分片=[16, 12, 18]  合计=46  重复=0  发现者残留=23
+[seedhub] 池=46  分片=[16, 12, 18]  合计=46  重复=0  发现者残留=23
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=24
+[seedhub] 池=47  分片=[16, 12, 19]  合计=47  重复=0  发现者残留=24
+[seedhub] 池=47  分片=[16, 12, 19]  合计=47  重复=0  发现者残留=24
+[seedhub] 池=47  分片=[16, 12, 19]  合计=47  重复=0  发现者残留=24
+[seedhub] 池=47  分片=[16, 12, 19]  合计=47  重复=0  发现者残留=24
+[seedhub] 池=47  分片=[16, 12, 19]  合计=47  重复=0  发现者残留=24
+[seedhub] 池=47  分片=[16, 12, 19]  合计=47  重复=0  发现者残留=24
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=25
+[seedhub] 池=48  分片=[16, 13, 19]  合计=48  重复=0  发现者残留=25
+[seedhub] 池=48  分片=[16, 13, 19]  合计=48  重复=0  发现者残留=25
+[seedhub] 已停止
+
+══════════ 第 2/3 轮（顺序: B_mixed_pool A_single_state）══════════
+
+──── level-1 可达比例  B_mixed_pool ────
+池可达性  [B_mixed_pool]
+  前缀   : b''（无前缀）
+  种子数 : 6
+[shm] 会话簿记边集 = [172, 174, 175, 177, 178, 181, 183, 718, 721, 724, 726, 778, 792, 795, 834, 843, 845]（17 条），每次快照自动扣除
+    admin_ftp_2_1.raw        b'USER admin\r\n'      → 331      可达        
+    admin_ftp_2_2.raw        b'PASS 123456\r\n'     → 530      打不响         应答='530 Invalid user name or password.\r\n'
+    admin_ftp_2_3.raw        b'PWD\r\n'             → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+    admin_ftp_2_4.raw        b'CWD /\r\n'           → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+    admin_ftp_2_5.raw        b'NOOP\r\n'            → 200      可达        
+    admin_ftp_2_6.raw        b'TYPE I\r\n'          → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+  可达 2/6
+  已写 /sbfpkg/ECSSandbox/ablation/B_mixed_pool.reach.json
+
+============================================
+  level-2 真 fuzz   B_mixed_pool   300s × 3 实例
+============================================
+[TARGET] 适配器: targets/lightftp.conf
+         名称=fftp  覆盖率=instrument  位图=65536B
+[STATE] B_mixed_pool  ← ablation
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         B_mixed_pool   ← 全机统一，可切换
+  实例数:       3（各自独立 outdir，互不盲同步）
+  靶机端口:     9001 .. 9003
+  共享种子池:   /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+         靶机  按 TARGET_BUILD_CMD 构建...
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[ARCHIVE] 旧数据已归档: archive/B_mixed_pool_pre_20261030-024010
+[STATE] node_state.current = B_mixed_pool
+[LAUNCH] 启动 3 个状态同质沙箱...
+    [0] port=9001  SHM_ID=21  server_loop=1158275
+    [1] port=9002  SHM_ID=22  server_loop=1158287
+    [2] port=9003  SHM_ID=23  server_loop=1158299
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 3 切分初始语料...
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：6 个正常种子 → 3 个分片  崩溃样本=0  占位=1
+[seedhub] 池=6  分片=[0, 1, 5]  合计=6  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9001  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9002  -i <分片1>  -F work/<state>/1
+[AFL++] fuzzer_2  port=9003  -i <分片2>  -F work/<state>/2
+
+[RUN] 3 个 AFL++ 实例运行中（状态同质：B_mixed_pool）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=1158331
+
+[RUN] 将在 300s 后自动停止...
+
+============================================
+  状态 B_mixed_pool — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       131870       439.63     19         0            39.09%     95      
+fuzzer_1       106309       354.41     16         0            38.68%     94      
+fuzzer_2       110954       369.96     16         0            43.21%     105     
+
+  ─── 去重分工核查 ───
+[seedhub] 池=49  分片=[11, 17, 21]  合计=49  重复=0  发现者残留=27
+
+  共享种子池: /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+  分片投喂:   /sbfpkg/ECSSandbox/work/B_mixed_pool/<0..2>
+  崩溃归档:   /sbfpkg/ECSSandbox/corpus/B_mixed_pool/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 启动  state=B_mixed_pool  实例数=3  owner模式=hash
+[seedhub] 公共池: /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+[seedhub] 投喂目录: /sbfpkg/ECSSandbox/work/B_mixed_pool/<0..2>  (-F 指向)
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=1
+[seedhub] 池=7  分片=[0, 2, 5]  合计=7  重复=0  发现者残留=1
+[seedhub] 新入库 优质种子=12  崩溃=0
+[seedhub] 重新分片  投喂+12  收回0  发现者残留=12
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=13
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=14
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=15
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=17
+[seedhub] 池=25  分片=[3, 8, 14]  合计=25  重复=0  发现者残留=17
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=18
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=19
+[seedhub] 池=28  分片=[4, 9, 15]  合计=28  重复=0  发现者残留=19
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=20
+[seedhub] 池=30  分片=[4, 11, 15]  合计=30  重复=0  发现者残留=20
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=20
+[seedhub] 池=31  分片=[4, 12, 15]  合计=31  重复=0  发现者残留=20
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=21
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=21
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=22
+[seedhub] 池=36  分片=[5, 15, 16]  合计=36  重复=0  发现者残留=22
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=24
+[seedhub] 池=39  分片=[7, 15, 17]  合计=39  重复=0  发现者残留=24
+[seedhub] 池=39  分片=[7, 15, 17]  合计=39  重复=0  发现者残留=24
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=25
+[seedhub] 池=40  分片=[8, 15, 17]  合计=40  重复=0  发现者残留=25
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=26
+[seedhub] 池=41  分片=[8, 15, 18]  合计=41  重复=0  发现者残留=26
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=26
+[seedhub] 池=42  分片=[8, 15, 19]  合计=42  重复=0  发现者残留=26
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=26
+[seedhub] 池=43  分片=[8, 15, 20]  合计=43  重复=0  发现者残留=26
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=26
+[seedhub] 池=44  分片=[9, 15, 20]  合计=44  重复=0  发现者残留=26
+[seedhub] 池=44  分片=[9, 15, 20]  合计=44  重复=0  发现者残留=26
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=26
+[seedhub] 池=45  分片=[9, 16, 20]  合计=45  重复=0  发现者残留=26
+[seedhub] 池=45  分片=[9, 16, 20]  合计=45  重复=0  发现者残留=26
+[seedhub] 池=45  分片=[9, 16, 20]  合计=45  重复=0  发现者残留=26
+[seedhub] 池=45  分片=[9, 16, 20]  合计=45  重复=0  发现者残留=26
+[seedhub] 池=45  分片=[9, 16, 20]  合计=45  重复=0  发现者残留=26
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=26
+[seedhub] 池=46  分片=[9, 16, 21]  合计=46  重复=0  发现者残留=26
+[seedhub] 池=46  分片=[9, 16, 21]  合计=46  重复=0  发现者残留=26
+[seedhub] 池=46  分片=[9, 16, 21]  合计=46  重复=0  发现者残留=26
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=27
+[seedhub] 池=47  分片=[9, 17, 21]  合计=47  重复=0  发现者残留=27
+[seedhub] 池=47  分片=[9, 17, 21]  合计=47  重复=0  发现者残留=27
+[seedhub] 池=47  分片=[9, 17, 21]  合计=47  重复=0  发现者残留=27
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=27
+[seedhub] 池=48  分片=[10, 17, 21]  合计=48  重复=0  发现者残留=27
+[seedhub] 池=48  分片=[10, 17, 21]  合计=48  重复=0  发现者残留=27
+[seedhub] 池=48  分片=[10, 17, 21]  合计=48  重复=0  发现者残留=27
+[seedhub] 池=48  分片=[10, 17, 21]  合计=48  重复=0  发现者残留=27
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=27
+[seedhub] 池=49  分片=[11, 17, 21]  合计=49  重复=0  发现者残留=27
+[seedhub] 池=49  分片=[11, 17, 21]  合计=49  重复=0  发现者残留=27
+[seedhub] 已停止
+
+──── level-1 可达比例  A_single_state ────
+池可达性  [A_single_state]
+  前缀   : b'USER admin\r\nPASS 123456\r\n'
+  种子数 : 6
+[shm] 会话簿记边集 = [172, 174, 175, 177, 178, 181, 183, 718, 721, 724, 726, 778, 792, 795, 834, 843, 845]（17 条），每次快照自动扣除
+    admin_ftp_2_1.raw        b'USER admin\r\n'      → 331      可达        
+    admin_ftp_2_2.raw        b'PASS 123456\r\n'     → 230      可达        
+    admin_ftp_2_3.raw        b'PWD\r\n'             → 257      可达        
+    admin_ftp_2_4.raw        b'CWD /\r\n'           → 250      可达        
+    admin_ftp_2_5.raw        b'NOOP\r\n'            → 200      可达        
+    admin_ftp_2_6.raw        b'TYPE I\r\n'          → 200      可达        
+  可达 6/6
+  已写 /sbfpkg/ECSSandbox/ablation/A_single_state.reach.json
+
+============================================
+  level-2 真 fuzz   A_single_state   300s × 3 实例
+============================================
+[TARGET] 适配器: targets/lightftp.conf
+         名称=fftp  覆盖率=instrument  位图=65536B
+[STATE] A_single_state  ← ablation
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         A_single_state   ← 全机统一，可切换
+  实例数:       3（各自独立 outdir，互不盲同步）
+  靶机端口:     9001 .. 9003
+  共享种子池:   /sbfpkg/ECSSandbox/corpus/A_single_state
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+         靶机  按 TARGET_BUILD_CMD 构建...
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[ARCHIVE] 旧数据已归档: archive/A_single_state_pre_20261030-024526
+[STATE] node_state.current = A_single_state
+[LAUNCH] 启动 3 个状态同质沙箱...
+    [0] port=9001  SHM_ID=31  server_loop=1857455
+    [1] port=9002  SHM_ID=32  server_loop=1857467
+    [2] port=9003  SHM_ID=33  server_loop=1857479
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 3 切分初始语料...
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：6 个正常种子 → 3 个分片  崩溃样本=0  占位=1
+[seedhub] 池=6  分片=[0, 1, 5]  合计=6  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9001  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9002  -i <分片1>  -F work/<state>/1
+[AFL++] fuzzer_2  port=9003  -i <分片2>  -F work/<state>/2
+
+[RUN] 3 个 AFL++ 实例运行中（状态同质：A_single_state）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=1857511
+
+[RUN] 将在 300s 后自动停止...
+[seedhub] 启动  state=A_single_state  实例数=3  owner模式=hash
+[seedhub] 公共池: /sbfpkg/ECSSandbox/corpus/A_single_state
+[seedhub] 投喂目录: /sbfpkg/ECSSandbox/work/A_single_state/<0..2>  (-F 指向)
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=1
+[seedhub] 池=7  分片=[0, 2, 5]  合计=7  重复=0  发现者残留=1
+[seedhub] 新入库 优质种子=17  崩溃=0
+[seedhub] 重新分片  投喂+17  收回0  发现者残留=12
+[seedhub] 新入库 优质种子=12  崩溃=0
+[seedhub] 重新分片  投喂+12  收回0  发现者残留=22
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=25
+[seedhub] 新入库 优质种子=11  崩溃=0
+[seedhub] 重新分片  投喂+11  收回0  发现者残留=33
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=35
+[seedhub] 池=54  分片=[19, 14, 21]  合计=54  重复=0  发现者残留=35
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=36
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=40
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=40
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=41
+[seedhub] 池=63  分片=[24, 17, 22]  合计=63  重复=0  发现者残留=41
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=41
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=41
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=41
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=45
+[seedhub] 池=70  分片=[25, 19, 26]  合计=70  重复=0  发现者残留=45
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=47
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=48
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=48
+[seedhub] 池=76  分片=[27, 20, 29]  合计=76  重复=0  发现者残留=48
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=49
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=50
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=52
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=53
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=54
+[seedhub] 池=84  分片=[31, 22, 31]  合计=84  重复=0  发现者残留=54
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=54
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=55
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=56
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=58
+[seedhub] 池=91  分片=[36, 22, 33]  合计=91  重复=0  发现者残留=58
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=59
+[seedhub] 池=92  分片=[36, 23, 33]  合计=92  重复=0  发现者残留=59
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=60
+[seedhub] 池=93  分片=[37, 23, 33]  合计=93  重复=0  发现者残留=60
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=61
+[seedhub] 池=94  分片=[37, 24, 33]  合计=94  重复=0  发现者残留=61
+[seedhub] 池=94  分片=[37, 24, 33]  合计=94  重复=0  发现者残留=61
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=62
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=63
+[seedhub] 池=96  分片=[37, 25, 34]  合计=96  重复=0  发现者残留=63
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=64
+[seedhub] 池=97  分片=[37, 26, 34]  合计=97  重复=0  发现者残留=64
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=65
+[seedhub] 池=98  分片=[37, 27, 34]  合计=98  重复=0  发现者残留=65
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=67
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=67
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=67
+[seedhub] 池=103  分片=[39, 29, 35]  合计=103  重复=0  发现者残留=67
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=68
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=69
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=70
+[seedhub] 池=107  分片=[41, 30, 36]  合计=107  重复=0  发现者残留=70
+[seedhub] 池=107  分片=[41, 30, 36]  合计=107  重复=0  发现者残留=70
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=71
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=73
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=75
+[seedhub] 池=112  分片=[41, 32, 39]  合计=112  重复=0  发现者残留=75
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=76
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=77
+[seedhub] 新入库 优质种子=8  崩溃=0
+[seedhub] 重新分片  投喂+8  收回0  发现者残留=83
+[seedhub] 新入库 优质种子=9  崩溃=0
+[seedhub] 重新分片  投喂+9  收回0  发现者残留=89
+[seedhub] 池=132  分片=[49, 38, 45]  合计=132  重复=0  发现者残留=89
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=91
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=92
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=94
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=96
+[seedhub] 池=143  分片=[52, 40, 51]  合计=143  重复=0  发现者残留=96
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=97
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=100
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=104
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=104
+[seedhub] 池=156  分片=[59, 42, 55]  合计=156  重复=0  发现者残留=104
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=104
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=105
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=106
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=107
+[seedhub] 池=161  分片=[61, 44, 56]  合计=161  重复=0  发现者残留=107
+
+============================================
+  状态 A_single_state — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       88545        295.20     86         0            61.32%     149     
+fuzzer_1       90117        300.44     87         0            60.91%     148     
+fuzzer_2       93661        312.36     89         0            62.14%     151     
+
+  ─── 去重分工核查 ───
+[seedhub] 池=213  分片=[75, 61, 77]  合计=213  重复=0  发现者残留=148
+
+  共享种子池: /sbfpkg/ECSSandbox/corpus/A_single_state
+  分片投喂:   /sbfpkg/ECSSandbox/work/A_single_state/<0..2>
+  崩溃归档:   /sbfpkg/ECSSandbox/corpus/A_single_state/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=110
+[seedhub] 新入库 优质种子=6  崩溃=0
+[seedhub] 重新分片  投喂+6  收回0  发现者残留=116
+[seedhub] 池=170  分片=[64, 47, 59]  合计=170  重复=0  发现者残留=116
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=117
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=118
+[seedhub] 池=174  分片=[66, 47, 61]  合计=174  重复=0  发现者残留=118
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=120
+[seedhub] 新入库 优质种子=7  崩溃=0
+[seedhub] 重新分片  投喂+7  收回0  发现者残留=125
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=127
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=128
+[seedhub] 池=186  分片=[69, 53, 64]  合计=186  重复=0  发现者残留=128
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=128
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=130
+[seedhub] 池=190  分片=[70, 54, 66]  合计=190  重复=0  发现者残留=130
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=131
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=132
+[seedhub] 池=192  分片=[71, 55, 66]  合计=192  重复=0  发现者残留=132
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=133
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=134
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=134
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=136
+[seedhub] 池=198  分片=[73, 56, 69]  合计=198  重复=0  发现者残留=136
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=137
+[seedhub] 池=199  分片=[73, 56, 70]  合计=199  重复=0  发现者残留=137
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=138
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=142
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=143
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=145
+[seedhub] 池=209  分片=[75, 59, 75]  合计=209  重复=0  发现者残留=145
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=145
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=146
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=147
+[seedhub] 池=213  分片=[75, 61, 77]  合计=213  重复=0  发现者残留=148
+[seedhub] 已停止
+
+══════════ 第 3/3 轮（顺序: A_single_state B_mixed_pool）══════════
+
+──── level-1 可达比例  A_single_state ────
+池可达性  [A_single_state]
+  前缀   : b'USER admin\r\nPASS 123456\r\n'
+  种子数 : 6
+[shm] 会话簿记边集 = [172, 174, 175, 177, 178, 181, 183, 718, 721, 724, 726, 778, 792, 795, 834, 843, 845]（17 条），每次快照自动扣除
+    admin_ftp_2_1.raw        b'USER admin\r\n'      → 331      可达        
+    admin_ftp_2_2.raw        b'PASS 123456\r\n'     → 230      可达        
+    admin_ftp_2_3.raw        b'PWD\r\n'             → 257      可达        
+    admin_ftp_2_4.raw        b'CWD /\r\n'           → 250      可达        
+    admin_ftp_2_5.raw        b'NOOP\r\n'            → 200      可达        
+    admin_ftp_2_6.raw        b'TYPE I\r\n'          → 200      可达        
+  可达 6/6
+  已写 /sbfpkg/ECSSandbox/ablation/A_single_state.reach.json
+
+============================================
+  level-2 真 fuzz   A_single_state   300s × 3 实例
+============================================
+[TARGET] 适配器: targets/lightftp.conf
+         名称=fftp  覆盖率=instrument  位图=65536B
+[STATE] A_single_state  ← ablation
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         A_single_state   ← 全机统一，可切换
+  实例数:       3（各自独立 outdir，互不盲同步）
+  靶机端口:     9001 .. 9003
+  共享种子池:   /sbfpkg/ECSSandbox/corpus/A_single_state
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+         靶机  按 TARGET_BUILD_CMD 构建...
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[ARCHIVE] 旧数据已归档: archive/A_single_state_pre_20261030-025042
+[STATE] node_state.current = A_single_state
+[LAUNCH] 启动 3 个状态同质沙箱...
+    [0] port=9001  SHM_ID=41  server_loop=2403251
+    [1] port=9002  SHM_ID=42  server_loop=2403263
+    [2] port=9003  SHM_ID=43  server_loop=2403275
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 3 切分初始语料...
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：6 个正常种子 → 3 个分片  崩溃样本=0  占位=1
+[seedhub] 池=6  分片=[0, 1, 5]  合计=6  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9001  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9002  -i <分片1>  -F work/<state>/1
+[AFL++] fuzzer_2  port=9003  -i <分片2>  -F work/<state>/2
+
+[RUN] 3 个 AFL++ 实例运行中（状态同质：A_single_state）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=2403307
+
+[RUN] 将在 300s 后自动停止...
+[seedhub] 启动  state=A_single_state  实例数=3  owner模式=hash
+[seedhub] 公共池: /sbfpkg/ECSSandbox/corpus/A_single_state
+[seedhub] 投喂目录: /sbfpkg/ECSSandbox/work/A_single_state/<0..2>  (-F 指向)
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=1
+[seedhub] 池=7  分片=[0, 2, 5]  合计=7  重复=0  发现者残留=1
+[seedhub] 新入库 优质种子=16  崩溃=0
+[seedhub] 重新分片  投喂+16  收回0  发现者残留=13
+[seedhub] 新入库 优质种子=7  崩溃=0
+[seedhub] 重新分片  投喂+7  收回0  发现者残留=19
+[seedhub] 新入库 优质种子=8  崩溃=0
+[seedhub] 重新分片  投喂+8  收回0  发现者残留=23
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=26
+[seedhub] 新入库 优质种子=7  崩溃=0
+[seedhub] 重新分片  投喂+7  收回0  发现者残留=30
+[seedhub] 池=50  分片=[14, 20, 16]  合计=50  重复=0  发现者残留=30
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=32
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=35
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=36
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=38
+[seedhub] 池=62  分片=[18, 25, 19]  合计=62  重复=0  发现者残留=38
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=40
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=41
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=42
+[seedhub] 池=67  分片=[19, 26, 22]  合计=67  重复=0  发现者残留=42
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=43
+[seedhub] 池=69  分片=[20, 27, 22]  合计=69  重复=0  发现者残留=43
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=44
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=46
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=49
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=49
+[seedhub] 池=77  分片=[22, 30, 25]  合计=77  重复=0  发现者残留=49
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=50
+[seedhub] 池=80  分片=[23, 32, 25]  合计=80  重复=0  发现者残留=50
+[seedhub] 池=80  分片=[23, 32, 25]  合计=80  重复=0  发现者残留=50
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=50
+[seedhub] 池=81  分片=[23, 32, 26]  合计=81  重复=0  发现者残留=50
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=51
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=52
+[seedhub] 池=83  分片=[24, 33, 26]  合计=83  重复=0  发现者残留=52
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=53
+[seedhub] 池=84  分片=[24, 33, 27]  合计=84  重复=0  发现者残留=53
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=54
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=55
+[seedhub] 池=87  分片=[25, 35, 27]  合计=87  重复=0  发现者残留=55
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=56
+[seedhub] 池=89  分片=[25, 36, 28]  合计=89  重复=0  发现者残留=56
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=57
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=57
+[seedhub] 池=92  分片=[26, 37, 29]  合计=92  重复=0  发现者残留=57
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=58
+[seedhub] 池=93  分片=[26, 37, 30]  合计=93  重复=0  发现者残留=58
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=59
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=60
+[seedhub] 池=95  分片=[27, 37, 31]  合计=95  重复=0  发现者残留=60
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=60
+[seedhub] 池=97  分片=[28, 37, 32]  合计=97  重复=0  发现者残留=60
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=61
+[seedhub] 池=98  分片=[28, 37, 33]  合计=98  重复=0  发现者残留=61
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=64
+[seedhub] 池=101  分片=[29, 39, 33]  合计=101  重复=0  发现者残留=64
+[seedhub] 新入库 优质种子=6  崩溃=0
+[seedhub] 重新分片  投喂+6  收回0  发现者残留=67
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=68
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=69
+[seedhub] 池=110  分片=[31, 42, 37]  合计=110  重复=0  发现者残留=69
+[seedhub] 新入库 优质种子=9  崩溃=0
+[seedhub] 重新分片  投喂+9  收回0  发现者残留=75
+[seedhub] 新入库 优质种子=5  崩溃=0
+[seedhub] 重新分片  投喂+5  收回0  发现者残留=80
+[seedhub] 新入库 优质种子=12  崩溃=0
+[seedhub] 重新分片  投喂+12  收回0  发现者残留=91
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=93
+[seedhub] 池=138  分片=[40, 50, 48]  合计=138  重复=0  发现者残留=93
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=94
+[seedhub] 新入库 优质种子=12  崩溃=0
+[seedhub] 重新分片  投喂+12  收回0  发现者残留=104
+[seedhub] 新入库 优质种子=4  崩溃=0
+[seedhub] 重新分片  投喂+4  收回0  发现者残留=107
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=109
+[seedhub] 池=158  分片=[46, 54, 58]  合计=158  重复=0  发现者残留=109
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=110
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=111
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=113
+[seedhub] 池=164  分片=[49, 56, 59]  合计=164  重复=0  发现者残留=113
+[seedhub] 新入库 优质种子=9  崩溃=0
+[seedhub] 重新分片  投喂+9  收回0  发现者残留=116
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=118
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=119
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=119
+[seedhub] 池=178  分片=[53, 63, 62]  合计=178  重复=0  发现者残留=119
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=121
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=122
+[seedhub] 新入库 优质种子=6  崩溃=0
+[seedhub] 重新分片  投喂+6  收回0  发现者残留=126
+[seedhub] 池=187  分片=[55, 65, 67]  合计=187  重复=0  发现者残留=126
+[seedhub] 新入库 优质种子=3  崩溃=0
+
+============================================
+  状态 A_single_state — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       97933        326.49     75         0            61.73%     150     
+fuzzer_1       81999        273.37     84         0            60.91%     148     
+fuzzer_2       86353        287.97     70         0            61.32%     149     
+
+  ─── 去重分工核查 ───
+[seedhub] 池=199  分片=[58, 70, 71]  合计=199  重复=0  发现者残留=133
+
+  共享种子池: /sbfpkg/ECSSandbox/corpus/A_single_state
+  分片投喂:   /sbfpkg/ECSSandbox/work/A_single_state/<0..2>
+  崩溃归档:   /sbfpkg/ECSSandbox/corpus/A_single_state/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=128
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=128
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=129
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=129
+[seedhub] 池=194  分片=[57, 68, 69]  合计=194  重复=0  发现者残留=129
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=129
+[seedhub] 池=195  分片=[57, 69, 69]  合计=195  重复=0  发现者残留=129
+[seedhub] 池=195  分片=[57, 69, 69]  合计=195  重复=0  发现者残留=129
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=131
+[seedhub] 池=197  分片=[58, 69, 70]  合计=197  重复=0  发现者残留=131
+[seedhub] 池=197  分片=[58, 69, 70]  合计=197  重复=0  发现者残留=131
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=133
+[seedhub] 池=199  分片=[58, 70, 71]  合计=199  重复=0  发现者残留=133
+[seedhub] 已停止
+
+──── level-1 可达比例  B_mixed_pool ────
+池可达性  [B_mixed_pool]
+  前缀   : b''（无前缀）
+  种子数 : 6
+[shm] 会话簿记边集 = [172, 174, 175, 177, 178, 181, 183, 718, 721, 724, 726, 778, 792, 795, 834, 843, 845]（17 条），每次快照自动扣除
+    admin_ftp_2_1.raw        b'USER admin\r\n'      → 331      可达        
+    admin_ftp_2_2.raw        b'PASS 123456\r\n'     → 530      打不响         应答='530 Invalid user name or password.\r\n'
+    admin_ftp_2_3.raw        b'PWD\r\n'             → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+    admin_ftp_2_4.raw        b'CWD /\r\n'           → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+    admin_ftp_2_5.raw        b'NOOP\r\n'            → 200      可达        
+    admin_ftp_2_6.raw        b'TYPE I\r\n'          → 530      打不响         应答='530 Please login with USER and PASS.\r\n'
+  可达 2/6
+  已写 /sbfpkg/ECSSandbox/ablation/B_mixed_pool.reach.json
+
+============================================
+  level-2 真 fuzz   B_mixed_pool   300s × 3 实例
+============================================
+[TARGET] 适配器: targets/lightftp.conf
+         名称=fftp  覆盖率=instrument  位图=65536B
+[STATE] B_mixed_pool  ← ablation
+============================================
+  SandboxFuzzer — 状态同质化 ECS 节点
+============================================
+  状态:         B_mixed_pool   ← 全机统一，可切换
+  实例数:       3（各自独立 outdir，互不盲同步）
+  靶机端口:     9001 .. 9003
+  共享种子池:   /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+  去重分工:     owner模式=hash（每种子唯一 owner，经 -F 投喂）
+  异步回传:     关闭（Dispatcher 后续设计）
+============================================
+
+[BUILD] 编译靶机与 Harness...
+         靶机  按 TARGET_BUILD_CMD 构建...
+[BUILD] ✓ 编译完成
+
+[CLEAN] 清理旧进程与输出...
+[ARCHIVE] 旧数据已归档: archive/B_mixed_pool_pre_20261030-025557
+[STATE] node_state.current = B_mixed_pool
+[LAUNCH] 启动 3 个状态同质沙箱...
+    [0] port=9001  SHM_ID=51  server_loop=2936948
+    [1] port=9002  SHM_ID=52  server_loop=2936960
+    [2] port=9003  SHM_ID=53  server_loop=2936972
+
+[SEEDHUB] 探测崩溃样本并按 sha256 % 3 切分初始语料...
+[seedhub] 分片 0 无正常种子，放入唯一占位种子（不与他人重复）
+[seedhub] bootstrap 完成：6 个正常种子 → 3 个分片  崩溃样本=0  占位=1
+[seedhub] 池=6  分片=[0, 1, 5]  合计=6  重复=0  发现者残留=0
+
+[AFL++] fuzzer_0  port=9001  -i <分片0>  -F work/<state>/0
+[AFL++] fuzzer_1  port=9002  -i <分片1>  -F work/<state>/1
+[AFL++] fuzzer_2  port=9003  -i <分片2>  -F work/<state>/2
+
+[RUN] 3 个 AFL++ 实例运行中（状态同质：B_mixed_pool）
+      共享种子池 + 唯一 owner 分工，无盲同步重复劳动
+
+[SEEDHUB] 启动 local_seedhub.py ...
+[SEEDHUB] PID=2937004
+
+[RUN] 将在 300s 后自动停止...
+
+============================================
+  状态 B_mixed_pool — 实例汇总
+============================================
+Instance       Execs        Exec/s     Corpus     Crashes      Coverage   Edges   
+------------------------------------------------------------------------------------------------------
+fuzzer_0       109689       365.67     14         0            34.98%     85      
+fuzzer_1       103513       345.09     16         0            39.51%     96      
+fuzzer_2       128200       427.46     16         0            39.92%     97      
+
+  ─── 去重分工核查 ───
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+
+  共享种子池: /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+  分片投喂:   /sbfpkg/ECSSandbox/work/B_mixed_pool/<0..2>
+  崩溃归档:   /sbfpkg/ECSSandbox/corpus/B_mixed_pool/crashes/
+============================================
+
+[STOP] 停止本节点所有进程...
+[seedhub] 启动  state=B_mixed_pool  实例数=3  owner模式=hash
+[seedhub] 公共池: /sbfpkg/ECSSandbox/corpus/B_mixed_pool
+[seedhub] 投喂目录: /sbfpkg/ECSSandbox/work/B_mixed_pool/<0..2>  (-F 指向)
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=1
+[seedhub] 池=7  分片=[0, 2, 5]  合计=7  重复=0  发现者残留=1
+[seedhub] 新入库 优质种子=13  崩溃=0
+[seedhub] 重新分片  投喂+13  收回0  发现者残留=10
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=12
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=12
+[seedhub] 池=23  分片=[7, 9, 7]  合计=23  重复=0  发现者残留=12
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=13
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=14
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=14
+[seedhub] 池=29  分片=[11, 10, 8]  合计=29  重复=0  发现者残留=14
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=15
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=16
+[seedhub] 池=32  分片=[13, 10, 9]  合计=32  重复=0  发现者残留=16
+[seedhub] 池=32  分片=[13, 10, 9]  合计=32  重复=0  发现者残留=16
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=17
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=19
+[seedhub] 新入库 优质种子=2  崩溃=0
+[seedhub] 重新分片  投喂+2  收回0  发现者残留=20
+[seedhub] 池=38  分片=[15, 12, 11]  合计=38  重复=0  发现者残留=20
+[seedhub] 新入库 优质种子=3  崩溃=0
+[seedhub] 重新分片  投喂+3  收回0  发现者残留=23
+[seedhub] 池=41  分片=[15, 12, 14]  合计=41  重复=0  发现者残留=23
+[seedhub] 池=41  分片=[15, 12, 14]  合计=41  重复=0  发现者残留=23
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=23
+[seedhub] 池=42  分片=[15, 13, 14]  合计=42  重复=0  发现者残留=23
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=24
+[seedhub] 池=43  分片=[15, 14, 14]  合计=43  重复=0  发现者残留=24
+[seedhub] 池=43  分片=[15, 14, 14]  合计=43  重复=0  发现者残留=24
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=25
+[seedhub] 池=44  分片=[15, 15, 14]  合计=44  重复=0  发现者残留=25
+[seedhub] 新入库 优质种子=1  崩溃=0
+[seedhub] 重新分片  投喂+1  收回0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 池=45  分片=[16, 15, 14]  合计=45  重复=0  发现者残留=25
+[seedhub] 已停止
+
+
+### 多轮汇总（3 轮：round1, round2, round3，奇数轮 A→B / 偶数轮 B→A）
+
+每格 = 轮间 mean ± sample std；Δ = 同轮配对差 A−B 的 mean ± std。
+
+| 指标 | A_single_state | B_mixed_pool | Δ(A−B，配对) |
+|---|---|---|---|
+| execs | 271,986 ± 5,540 | 330,341 ± 26,140 | -58,354 ± 30,511 |
+| exec/s | 906.87 ± 18.50 | 1101.33 ± 87.17 | -194.46 ± 101.76 |
+| corpus | 239 ± 19 | 49 ± 2 | +190 ± 18 |
+| crashes | 0 ± 0 | 0 ± 0 | 0 ± 0 |
+| edges | 151 ± 1 | 102 ± 4 | +48 ± 3 |
+| bitmap | 62.14 ± 0.41 | 42.11 ± 1.90 | +20.03 ± 1.56 |
+
+level-1 可达 [A_single_state]：逐轮 6/6  6/6  6/6
+level-1 可达 [B_mixed_pool]：逐轮 2/6  2/6  2/6
+
+corpus 一列是实例求和（含 -F 同步副本），为上界；crashes/execs/exec/s 求和是实数；edges/bitmap 取实例最大。
+level-1 可达是机制证据，上表是结果证据 —— 两层必须同向才成立。

@@ -29,6 +29,10 @@ static unsigned long long g_ph_connect, g_ph_banner, g_ph_prefix,
                           g_ph_payload, g_ph_probe, g_ph_misc;
 static unsigned long g_ph_iters;
 static const char *g_timing_file;
+// 多久落一次分段计时。默认 2000：正常吞吐下 ~8s 一次，够看趋势又不刷盘。
+// 查吞吐卡顿时用 SBF_TIMING_EVERY 调小（如 100），才能拿到【慢时段】的相位分布，
+// 否则只有进程退出时那一份累计均值，快慢两段被平均掉，看不出是哪一段在烧。
+static unsigned long g_timing_every = 2000;
 
 static unsigned long long now_us(void) {
     struct timespec ts;
@@ -302,6 +306,11 @@ int main(int argc, char *argv[]) {
 
     const char *tf = getenv("SBF_TIMING_FILE");
     if (tf && *tf) g_timing_file = tf;
+    const char *te = getenv("SBF_TIMING_EVERY");
+    if (te && *te) {
+        long v = atol(te);
+        if (v > 0) g_timing_every = (unsigned long)v;
+    }
     const char *rw = getenv("SBF_REPLY_WAIT_US");
     if (rw && *rw) {
         int v = atoi(rw);
@@ -389,7 +398,7 @@ int main(int argc, char *argv[]) {
         g_ph_probe += now_us() - tmark;
 
         g_ph_iters++;
-        if ((g_ph_iters % 2000) == 0) timing_dump(0);
+        if ((g_ph_iters % g_timing_every) == 0) timing_dump(0);
     }
 
     // 清理

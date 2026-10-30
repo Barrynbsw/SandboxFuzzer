@@ -117,10 +117,15 @@ SCENARIOS = [
 
 # ── 真值：响应码依赖 ───────────────────────────────────────────────
 
-def measure(oracle: TcpShmOracle, seq: list[int], msgs: list[bytes]):
-    """跑一条会话，返回 {msg_idx: (cov, code)}。"""
+def measure(oracle: TcpShmOracle, seq: list[int], msgs: list[bytes],
+            repeats: int = 3):
+    """跑一条会话测真值，返回 {msg_idx: (cov, code)}。
+
+    repeats 条独立会话取多数票（审查 L4：真值单次测量时，一次抖动抖错一个
+    响应码，就凭空造出/抹掉一条依赖边 —— 真值必须 2-3 次测得一致才算数）。
+    """
     blobs = [msgs[i] for i in seq]
-    rows = oracle.run_sequence_with_replies(blobs)
+    rows = oracle.run_sequence_with_replies(blobs, repeats=repeats)
     out = {}
     for pos, idx in enumerate(seq):
         cov, reply = rows[pos]
@@ -194,9 +199,10 @@ def score(got, truth):
 
 # ── 主流程 ─────────────────────────────────────────────────────────
 
-# δ 扫描取值：从远低于实测地板一直到远高于最弱真信号（0.143）。
-# 真机上实测信号是 0.143~0.519，杂散边是 0.0625，所以稳的区间应在
-# 0.0625 与 0.143 之间 —— 这个区间有多宽，就是结论有多稳。
+# δ 扫描取值：从远低于实测地板一直到远高于最弱真信号。
+# 全对区间有多宽，就是结论有多稳 —— 上界由最弱真信号决定，下界由噪声地板决定。
+# 2026-10-29 修掉跨会话污染后实测：噪声地板 0.000，真信号 0.200~0.571，
+# 非依赖精确 0.000，全对区间 δ ∈ [0.02, 0.16]。
 DELTA_SWEEP = [0.02, 0.05, 0.08, 0.10, 0.13, 0.16, 0.25, 0.40]
 
 
@@ -271,13 +277,21 @@ def run():
             got = res.prerequisite_set
             pr, rr = score(got, truth)
 
-            print(f"  δ 校准   : δ={delta:.4f}  噪声地板(中位)={floor:.4f}")
+            print(f"  δ 校准   : δ={delta:.4f}  噪声地板(零分布 max)={floor:.4f}")
             print(f"  Algorithm 2   → {a2}  {[seq_names[i] for i in a2]}  "
                   f"P={p2:.2f} R={r2:.2f}  "
                   f"{'OK' if set(a2) == set(truth) else 'MISMATCH'}")
             print(f"  会话前缀重建  → {got}  {[seq_names[i] for i in got]}  "
                   f"P={pr:.2f} R={rr:.2f}  "
                   f"{'OK' if set(got) == set(truth) else 'MISMATCH'}")
+
+            # 依赖边级 P/R（审查 L3）：比「前置集合」更细 —— 集合对了
+            # 不代表边对（x→y 的指向错了集合仍可能对）。
+            true_edges = {(x, y) for x, ys in deps.items() for y in ys}
+            pred_edges = {(x, y) for x, ys in res.deps.items() for y in ys}
+            ep, er = score(pred_edges, true_edges)
+            print(f"  边级 P/R   : 预测边={sorted(pred_edges)}  "
+                  f"真值边={sorted(true_edges)}  P={ep:.2f} R={er:.2f}")
 
             # 信号 vs 阈值：漏检时看这里，区分「阈值压过信号」与「信号弱」
             print(f"  实测信号 : ", end="")
@@ -288,7 +302,21 @@ def run():
                 print(f"{lbl}={d:.3f}{mark}", end="  ")
             print()
 
-            # ── B 段：每个目标命令的最短前置序列 ──
+            # 依赖 / 非依赖的信号分离度。δ 的可选区间就夹在这两个数之间：
+            #   下界 = 噪声地板（比它小的差异视为抖动）
+            #   上界 = 最弱真信号（比它大的 δ 会把真依赖压掉）
+            # 分离度越宽，结论越不依赖 δ 取值。
+            dep_vals = [d for (x, y), d in res.signals.items()
+                        if y > x and y in deps.get(x, ())]
+            non_vals = [d for (x, y), d in res.signals.items()
+                        if y > x and y not in deps.get(x, ())]
+            sig_lo = min(dep_vals) if dep_vals else float("nan")
+            sig_hi = max(non_vals, default=0.0)
+            print(f"  信号分离 : 最弱真依赖={sig_lo:.3f}  "
+                  f"最强非依赖={sig_hi:.3f}  "
+                  f"（δ 必须落在二者之间才有判别力）")
+
+            # ── B 段：每个目标命令的 1-最小保序前置序列 ──
             probes = per_target_probes(oracle, msgs, seq_names)
             b_ok = 0
             for tgt in seq_names:
@@ -323,7 +351,9 @@ def run():
             results.append({
                 "name": name, "truth": truth, "a2": a2, "rebuild": got,
                 "p2": p2, "r2": r2, "pr": pr, "rr": rr,
+                "ep": ep, "er": er,
                 "b_ok": b_ok, "b_n": len(seq_names),
+                "sig_lo": sig_lo, "sig_hi": sig_hi,
             })
 
     # ── 汇总 ──────────────────────────────────────────────────────
@@ -343,13 +373,18 @@ def run():
     b_n = sum(r["b_n"] for r in results)
     print(f"  A段完全命中:  Algorithm 2 = {ok2}/{len(results)}   "
           f"会话前缀重建 = {okr}/{len(results)}")
-    print(f"  B段(每目标命令最短前置)命中:  {b_ok}/{b_n}")
+    print(f"  B段(每目标命令 1-最小保序前置)命中:  {b_ok}/{b_n}")
     mp2 = sum(r["p2"] for r in results) / len(results)
     mr2 = sum(r["r2"] for r in results) / len(results)
     mpr = sum(r["pr"] for r in results) / len(results)
     mrr = sum(r["rr"] for r in results) / len(results)
     print(f"  平均      : Algorithm 2 P={mp2:.2f} R={mr2:.2f}   "
           f"会话前缀重建 P={mpr:.2f} R={mrr:.2f}")
+    # 边级平均：Algorithm 2 只产出切点不产出依赖图，边级只有重建可比
+    mep = sum(r["ep"] for r in results) / len(results)
+    mer = sum(r["er"] for r in results) / len(results)
+    print(f"  边级平均  : 会话前缀重建 P={mep:.2f} R={mer:.2f}"
+          f"（依赖边 x→y，比前置集合更细的口径）")
 
     # ── δ 敏感性汇总 ──────────────────────────────────────────────
     if sweep_rows:
@@ -368,8 +403,14 @@ def run():
         ok_band = [d for k, d in enumerate(DELTA_SWEEP)
                    if hit[k] == len(sweep_rows)]
         if ok_band:
-            print(f"\n  全对区间 δ ∈ [{min(ok_band):.2f}, {max(ok_band):.2f}]"
-                  f"   （实测杂散边 ≈0.0625，最弱真信号 ≈0.143）")
+            los = [r["sig_lo"] for r in results if r["sig_lo"] == r["sig_lo"]]
+            hi = max((r["sig_hi"] for r in results), default=0.0)
+            lo = min(los) if los else float("nan")
+            print(f"\n  全对区间 δ ∈ [{min(ok_band):.2f}, {max(ok_band):.2f}]")
+            print(f"    实测信号分离度：最强非依赖 {hi:.3f} < δ < 最弱真依赖 {lo:.3f}")
+            print(f"    → 可选区间宽 {lo - hi:.3f}，"
+                  + ("结论不靠 δ 取值" if lo - hi > 0.05
+                     else "区间偏窄，δ 仍敏感，要重新审"))
         else:
             print("\n  没有任何一个 δ 能全对 —— 说明结论依赖 δ 取值，要重新审")
     return 0 if okr == len(results) and b_ok == b_n else 1

@@ -17,6 +17,9 @@ replay_judge.py — 崩溃样本归属判卷器
 """
 import os, socket, subprocess, sys, time, glob
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from local_seedhub import LocalSeedHub  # noqa: E402  复用逐条发/按行收口径
+
 PROBE_CMD = b"NOOP\r\n"
 
 
@@ -51,7 +54,7 @@ def wait_up(port, tries=40):
     return False
 
 
-def judge_one(srv, port, prefix, payload):
+def judge_one(srv, port, prefix, payload, banner_lines=0):
     """返回 (是否真崩溃, 观测描述)。真崩溃=True / 良性=False / 无法判定=None"""
     if not wait_up(port):
         return None, "靶机起不来"
@@ -64,17 +67,16 @@ def judge_one(srv, port, prefix, payload):
         return None, f"connect 失败 {e}"
 
     try:
-        if prefix:
-            s.sendall(prefix)
-            # 按行读干净前缀应答 —— 不能 sleep：靶机 recv 超时只有 10ms，
-            # 睡 20ms 等于让靶机先把连接关了，载荷根本没送出去。
-            need = prefix.count(b"\n")
-            got = b""
-            while got.count(b"\n") < need:
-                d = s.recv(256)
-                if not d:
-                    break
-                got += d
+        # banner 属于连接建立，不属于任何一条消息，先读掉（FTP/SSH/SMTP）
+        if banner_lines > 0 and LocalSeedHub.recv_lines(s, banner_lines) < 0:
+            return None, "banner 无应答"
+        # 前缀要【逐条报文】发、逐条等应答（审查 F7）：LightFTP 一次 recv
+        # 当一条命令，整块 sendall 会被合并吞噬，"种子是否可达"判定系统性出错。
+        # 不能 sleep：靶机 recv 超时只有 10ms，睡 20ms 等于让靶机先把连接关了。
+        for msg in LocalSeedHub.split_msgs(prefix):
+            s.sendall(msg)
+            if LocalSeedHub.recv_lines(s, 1) < 0:
+                break
         s.sendall(payload)
     except Exception:
         pass
@@ -108,6 +110,8 @@ def main():
     ap.add_argument("--bin", default="./stateful_server")
     ap.add_argument("--port", type=int, default=9200)
     ap.add_argument("--expect", choices=["crash","benign"], default="crash")
+    ap.add_argument("--banner-lines", type=int, default=0,
+                    help="连上后靶机先送几行 banner（与 TARGET_BANNER_LINES 同值）")
     args = ap.parse_args()
 
     prefix = b""
@@ -130,7 +134,7 @@ def main():
         env = os.environ.copy()
         srv = subprocess.Popen([os.path.abspath(args.bin), str(args.port)],
                                env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        ok, obs = judge_one(srv, args.port, prefix, payload)
+        ok, obs = judge_one(srv, args.port, prefix, payload, args.banner_lines)
         if srv.poll() is None:
             srv.kill(); srv.wait()
 

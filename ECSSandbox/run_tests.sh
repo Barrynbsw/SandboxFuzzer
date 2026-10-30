@@ -102,6 +102,37 @@ if [ "$MODE" = "all" ] || [ "$MODE" = "unit" ] || [ "$MODE" = "smoke" ]; then
 fi
 
 # ════════════════════════════════════════════════════════════
+# 2b. seedhub 探测口径（Python 侧必须与 sandbox_harness.c 同口径）
+#     三处曾经对不上：前缀整块发（粘包）/ 不读 banner / 应答只 recv 一次。
+#     任何一处漂移都会变成"seedhub 说安全、AFL++ 说 crash"。
+#     mock 纯本地起，不需要真靶机，也不需要进容器。
+# ════════════════════════════════════════════════════════════
+if [ "$MODE" = "all" ] || [ "$MODE" = "unit" ] || [ "$MODE" = "smoke" ]; then
+    note "2b) seedhub 探测口径（前缀逐条发 / banner / 应答残留）"
+    if python3 tests/test_seedhub_probe.py >tests/bin/t_seedhub.log 2>&1; then
+        ok "探测口径全过（$(grep -c '✓' tests/bin/t_seedhub.log) 项）"
+    else
+        bad "seedhub 探测口径与 sandbox_harness.c 漂移"
+        sed 's/^/      /' tests/bin/t_seedhub.log
+    fi
+fi
+
+# ════════════════════════════════════════════════════════════
+# 2c. bootstrap 崩溃分类（真靶机 stateful_server）
+#     审查 F1 残留③④ 的验收：PASS CRASH / STOR BUG 等崩溃样本必须
+#     全部判死归档，正常种子必须零误判 —— 逐样本独立靶机，互不干扰。
+# ════════════════════════════════════════════════════════════
+if [ "$MODE" = "all" ] || [ "$MODE" = "unit" ] || [ "$MODE" = "smoke" ]; then
+    note "2c) bootstrap 崩溃分类（真靶机：崩溃全判死 / 正常零误判）"
+    if python3 tests/test_seedhub_bootstrap.py >tests/bin/t_seedhub_bs.log 2>&1; then
+        ok "崩溃分类全对（$(grep -c '✓' tests/bin/t_seedhub_bs.log) 项）"
+    else
+        bad "bootstrap 崩溃分类有误"
+        sed 's/^/      /' tests/bin/t_seedhub_bs.log
+    fi
+fi
+
+# ════════════════════════════════════════════════════════════
 # 3. 归属判卷：双向
 #    崩溃 fixture 必须复现（否则归档不可信）
 #    良性 fixture 必须不崩（否则假 crash 淹掉真发现）

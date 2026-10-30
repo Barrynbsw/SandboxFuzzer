@@ -1,0 +1,93 @@
+[1;92m[+] [0mEnabled environment variable AFL_SKIP_CPUFREQ with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_AFFINITY with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_NO_UI with value 1[0m
+[0;36mafl-fuzz++4.21c[0m based on afl by Michal Zalewski and a large online community
+[1;92m[+] [0mAFL++ is maintained by Marc "van Hauser" Heuse, Dominik Maier, Andrea Fioraldi and Heiko "hexcoder" Eißfeldt[0m
+[1;92m[+] [0mAFL++ is open source, get it at https://github.com/AFLplusplus/AFLplusplus[0m
+[1;92m[+] [0mNOTE: AFL++ >= v3 has changed defaults and behaviours - see README.md[0m
+[1;94m[*] [0mGetting to work...[0m
+[1;92m[+] [0mUsing exploration-based constant power schedule (EXPLORE)[0m
+[1;92m[+] [0mEnabled testcache with 50 MB[0m
+[1;92m[+] [0mGenerating fuzz data with a length of min=1 max=1048576[0m
+[1;94m[*] [0mChecking core_pattern...[0m
+
+[1;91m[-] [0mHmm, your system is configured to send core dump notifications to an
+    external utility. This will cause issues: there will be an extended delay
+    between stumbling upon a crash and having this information relayed to the
+    fuzzer via the standard waitpid() API.
+    If you're just testing, set 'AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1'.
+
+    To avoid having crashes misinterpreted as timeouts, please log in as root
+    and temporarily modify /proc/sys/kernel/core_pattern, like so:
+
+    echo core >/proc/sys/kernel/core_pattern
+[1;92m[+] [0mDisabling the UI because AFL_NO_UI is set.[0m
+[1;92m[+] [0mYou have 8 CPU cores and 5 runnable tasks (utilization: 62%).[0m
+[1;92m[+] [0mTry parallel jobs - see /usr/local/share/doc/afl/fuzzing_in_depth.md#c-using-multiple-cores[0m
+[1;94m[*] [0mSetting up output directories...[0m
+[1;93m[!] [1;97mWARNING: [0mNot binding to a CPU core (AFL_NO_AFFINITY set).[0m
+[1;94m[*] [0mScanning '/sbfpkg/ECSSandbox/corpus/diag_stall/init_shards/0'...[0m
+[1;92m[+] [0mLoaded a total of 1 seeds.[0m
+[1;94m[*] [0mCreating hard links for all input files...[0m
+[1;94m[*] [0mValidating target binary...[0m
+[1;92m[+] [0m[1;95mPersistent mode binary detected.[0m
+[1;92m[+] [0m[1;95mDeferred forkserver binary detected.[0m
+[1;94m[*] [0mSpinning up the fork server...[0m
+[1;92m[+] [0mAll right - new fork server model v1 is up.[0m
+[1;94m[*] [0mTarget map size: 239[0m
+[1;94m[*] [0mUsing SHARED MEMORY FUZZING feature.[0m
+[1;94m[*] [0mNo auto-generated dictionary tokens to reuse.[0m
+[1;94m[*] [0mAttempting dry run with 'id:000000,time:0,execs:0,orig:placeholder_0.raw'...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;90m    len = 19, map size = 60, exec speed = 1659 us, hash = 0337c23ad00e3da7
+[0m[1;93m[!] [1;97mWARNING: [0mInstrumentation output varies across runs.[0m
+[1;92m[+] [0mAll test cases processed.[0m
+[1;92m[+] [0mHere are some useful stats:
+
+[1;90m    Test case count : [0m1 favored, 1 variable, 0 ignored, 1 total
+[1;90m       Bitmap range : [0m60 to 60 bits (average: 60.00 bits)
+[1;90m        Exec timing : [0m1659 to 1659 us (average: 1659 us)
+[0m
+[1;94m[*] [0m-t option specified. We'll use an exec timeout of 1000 ms.[0m
+[1;92m[+] [0mAll set and ready to roll![0m
+[1;94m[*] [0mEntering queue cycle 1
+[0m
+[1;94m[*] [0mFuzzing test case #0 (1 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=1659, hits=0, map=60, ascii=0, run_time=0:00:00:00)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #1 (8 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=7016, hits=0, map=56, ascii=0, run_time=0:00:00:04)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #2 (26 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=1862, hits=0, map=56, ascii=0, run_time=0:00:00:13)...[0m
+[1;94m[*] [0mFuzzing test case #3 (26 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=1922, hits=0, map=61, ascii=0, run_time=0:00:00:14)...[0m
+[1;94m[*] [0mFuzzing test case #7 (26 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=4979, hits=0, map=71, ascii=0, run_time=0:00:00:15)...[0m
+[1;94m[*] [0mFuzzing test case #10 (26 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3824, hits=0, map=75, ascii=0, run_time=0:00:00:16)...[0m
+[1;94m[*] [0mFuzzing test case #11 (26 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=1863, hits=0, map=76, ascii=0, run_time=0:00:00:18)...[0m
+[1;94m[*] [0mFuzzing test case #13 (27 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3423, hits=0, map=72, ascii=0, run_time=0:00:00:20)...[0m
+[1;94m[*] [0mFuzzing test case #17 (27 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=4114, hits=0, map=76, ascii=0, run_time=0:00:00:21)...[0m
+[1;94m[*] [0mFuzzing test case #20 (28 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=3252, hits=0, map=76, ascii=0, run_time=0:00:00:23)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #22 (32 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=1812, hits=0, map=60, ascii=0, run_time=0:00:00:31)...[0m
+[1;94m[*] [0mFuzzing test case #31 (32 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=2236, hits=0, map=77, ascii=0, run_time=0:00:00:32)...[0m
+[1;94m[*] [0mFuzzing test case #32 (35 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=1829, hits=0, map=78, ascii=0, run_time=0:00:00:39)...[0m
+[1;94m[*] [0mEntering queue cycle 2
+[0m
+[1;94m[*] [0mFuzzing test case #1 (37 total, 0 crashes saved, state: started :-), mode=explore, perf_score=75, weight=1, favorite=1, was_fuzzed=1, exec_us=7016, hits=0, map=56, ascii=0, run_time=0:00:00:43)...[0m
+[1;94m[*] [0mFuzzing test case #2 (37 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=1862, hits=0, map=56, ascii=0, run_time=0:00:00:44)...[0m
+[1;94m[*] [0mFuzzing test case #3 (37 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=1922, hits=0, map=61, ascii=0, run_time=0:00:00:45)...[0m
+[1;94m[*] [0mFuzzing test case #7 (37 total, 0 crashes saved, state: started :-), mode=explore, perf_score=75, weight=1, favorite=1, was_fuzzed=1, exec_us=4979, hits=0, map=71, ascii=0, run_time=0:00:00:46)...[0m
+[1;94m[*] [0mFuzzing test case #10 (37 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=1, exec_us=3824, hits=0, map=75, ascii=0, run_time=0:00:00:48)...[0m
+[1;94m[*] [0mFuzzing test case #24 (38 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=5073, hits=0, map=76, ascii=0, run_time=0:00:00:49)...[0m
+[1;94m[*] [0mFuzzing test case #27 (38 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=0, was_fuzzed=0, exec_us=5791, hits=0, map=77, ascii=0, run_time=0:00:00:50)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[1;94m[*] [0mFuzzing test case #37 (40 total, 0 crashes saved, state: started :-), mode=explore, perf_score=100, weight=1, favorite=1, was_fuzzed=0, exec_us=2030, hits=0, map=61, ascii=0, run_time=0:00:00:55)...[0m
+[1;93m[!] [1;97mWARNING: [0minstability detected during calibration[0m
+[?25h[1;91m
+
++++ Testing aborted by user +++
+[0m[1;94m[*] [0mStatistics: 40 new corpus items found, 41.42% coverage achieved, 0 crashes saved, 0 timeouts saved, total runtime 0 days, 0 hrs, 2 min, 29 sec[0m
+[1;92m[+] [0mWe're done here. Have a nice day!
+[0m

@@ -99,6 +99,19 @@ def split_lines(blob: bytes) -> list[bytes]:
     return out
 
 
+def cmd_of(blob: bytes) -> str:
+    """从种子的原始字节里取命令名（FTP 的首 token，到空格或 \\r\\n 为止）。
+
+    种子文件名里只有下标（admin_ftp_2_1.raw），命令名要从载荷本身取。
+    """
+    tok = b""
+    for b in blob:
+        if b in (0x20, 0x0D, 0x0A):
+            break
+        tok += bytes([b])
+    return tok.decode("latin-1", "replace").upper()
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="验收导出的 prefix.raw 能否真用")
     ap.add_argument("--root", default="prefix_analyzer_output_rebuild")
@@ -107,6 +120,8 @@ def main() -> int:
     ap.add_argument("--banner-lines", type=int, default=1)
     ap.add_argument("--repeats", type=int, default=5,
                     help="每条打几次，防偶发抖动")
+    ap.add_argument("--check-seeds", action="store_true",
+                    help="额外验收「种子池单状态」：池里每条种子在本状态下都得能打")
     args = ap.parse_args()
 
     states = discover(args.root)
@@ -179,9 +194,41 @@ def main() -> int:
                   f"{'期望失败' if should_fail else '期望成功'}  "
                   f"{'符合' if ok else '不符合'}")
 
+        # ── 种子池单状态验收（可选）──────────────────────────────
+        n_seed_ok = n_seed_tested = 0
+        if args.check_seeds:
+            print(f"\n  种子池单状态验收（池内每条种子在本状态下必须能正常打）:")
+            for name, cmd, target, prefix, n_seed in states:
+                sd = os.path.join(args.root, name, "seeds")
+                if not os.path.isdir(sd):
+                    continue
+                bad, good = [], 0
+                for fn in sorted(os.listdir(sd)):
+                    with open(os.path.join(sd, fn), "rb") as f:
+                        seed = f.read()
+                    scmd = cmd_of(seed)
+                    want = SUCCESS_CODES.get(scmd, set())
+                    if not want:
+                        continue
+                    n_seed_tested += 1
+                    rows = oracle.run_sequence_with_replies(
+                        split_lines(prefix) + [seed])
+                    code = TcpShmOracle.response_code(rows[-1][1]) if rows else ""
+                    if code in want:
+                        n_seed_ok += 1
+                        good += 1
+                    else:
+                        bad.append((fn, scmd, code or '(无应答)'))
+                print(f"    {name:36s} 可达 {good}/{good + len(bad)}"
+                      + (f"   打不响: {bad[:3]}" if bad else "  OK"))
+
     print(f"  对照组符合预期 {n_ctrl}/{n_tested}")
+    if args.check_seeds:
+        print(f"  种子池单状态: {n_seed_ok}/{n_seed_tested} 条种子在本状态可达")
     # 两组都必须全对：试验组证明前缀够用，对照组证明前缀是【必要的】。
     verdict = (n_pass == n_tested) and (n_ctrl == n_tested) and n_tested > 0
+    if args.check_seeds:
+        verdict = verdict and n_seed_ok == n_seed_tested and n_seed_tested > 0
     print(f"\n  {'=' * 70}")
     print(f"  验收结论: {'通过 —— 产物可用' if verdict else '未通过'}")
     return 0 if verdict else 1

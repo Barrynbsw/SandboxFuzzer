@@ -28,6 +28,67 @@ from sbf_redis import Redis, RedisError  # noqa: E402
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATE_FILE = os.path.join(SCRIPT_DIR, "node_state.current")
 ARCHIVE_DIR = os.path.join(SCRIPT_DIR, "results_archive")
+# 与 run_state_node.sh 的 LOCK_PID_FILE 同一约定（可被 SBF_LOCK_FILE 覆盖）
+LOCK_PID_FILE = os.environ.get("SBF_LOCK_FILE", "/tmp/sbf_node.lock")
+
+
+def read_lock_pid():
+    try:
+        with open(LOCK_PID_FILE, "r", encoding="utf-8") as f:
+            return int(f.read().strip() or 0) or None
+    except (OSError, ValueError):
+        return None
+
+
+def pid_alive(pid):
+    if not pid:
+        return False
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
+
+
+def kill_lock_holder(wait_term=5.0, wait_kill=2.0):
+    """杀掉持锁的父进程 run_state_node.sh 并等它真正退出。
+
+    只 pkill 子进程（afl-fuzz/靶机/seedhub）杀不到父进程自身：它握着节点锁，
+    不等它退就拉起新节点会撞锁 exits 1，调用方却以为切换成功 —— fuzz 静默跑在
+    错误状态上（审查 F2）。SIGKILL 后锁文件可能残留（trap 来不及跑），由
+    run_state_node.sh 的"持有者已死按残留清扫"兜底。
+    """
+    holder = read_lock_pid()
+    if not holder or holder == os.getpid() or not pid_alive(holder):
+        return holder
+    for sig, budget in ((signal.SIGTERM, wait_term), (signal.SIGKILL, wait_kill)):
+        try:
+            os.kill(holder, sig)
+        except OSError:
+            break
+        deadline = time.time() + budget
+        while time.time() < deadline and pid_alive(holder):
+            time.sleep(0.1)
+        if not pid_alive(holder):
+            break
+    if pid_alive(holder):
+        print("[!] 节点父进程 pid=%d 拒不退出，切换不安全" % holder, file=sys.stderr)
+    return holder
+
+
+def wait_new_lock(old_holder, timeout=30.0):
+    """等新节点拿到锁并回读确认；返回新持锁 PID，拿不到返回 None。
+
+    run_state_node.sh 早期就 echo $$ > 锁文件，所以锁归属是"新节点是否真的
+    起来了"最便宜的探针。[DONE] 只能在确认之后打 —— 否则切换静默失败（F2）。
+    """
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        pid = read_lock_pid()
+        if pid and pid != old_holder and pid_alive(pid):
+            return pid
+        time.sleep(0.2)
+    return None
 
 
 def read_current_state():
@@ -158,6 +219,8 @@ def main():
     # 1) 停机（整机一起停，不留异质残留）
     stop_node(old_state)
     stop_node(args.new_state)  # 防止目标状态有僵尸
+    # 子进程之外还有持锁的父进程 run_state_node.sh —— 必须等它退出再拉新的
+    old_holder = kill_lock_holder()
 
     # 2) 归档旧状态语料
     archive_results(old_state, keep=args.keep_results)
@@ -189,8 +252,18 @@ def main():
     log = open(os.path.join(SCRIPT_DIR, "node_%s.log" % args.new_state), "ab")
     subprocess.Popen(cmd, stdout=log, stderr=log,
                      start_new_session=True, cwd=SCRIPT_DIR)
-    print("[DONE] 新状态 %s 已在后台拉起 (日志: node_%s.log)" %
-          (args.new_state, args.new_state))
+
+    # 回读节点锁确认新节点真的拿到了锁 —— 拿不到就是切换静默失败（审查 F2），
+    # [DONE] 只能在确认之后打。
+    new_holder = wait_new_lock(old_holder)
+    if not new_holder:
+        print("[!] 新状态 %s 没有拿到节点锁，切换失败" % args.new_state,
+              file=sys.stderr)
+        print("    排查: cat %s ; tail -50 node_%s.log"
+              % (LOCK_PID_FILE, args.new_state), file=sys.stderr)
+        return 1
+    print("[DONE] 新状态 %s 已拉起，持锁 pid=%d (日志: node_%s.log)" %
+          (args.new_state, new_holder, args.new_state))
     return 0
 
 

@@ -1,0 +1,12 @@
+{
+  "A_single_state": {
+    "prefix": "USER admin\r\nPASS 123456\r\n",
+    "pool": "6 条",
+    "reachable": "6/6"
+  },
+  "B_mixed_pool": {
+    "prefix": "",
+    "pool": "6 条",
+    "reachable": "2/6"
+  }
+}

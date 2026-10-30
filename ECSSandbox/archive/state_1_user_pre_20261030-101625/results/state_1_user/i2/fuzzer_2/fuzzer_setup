@@ -1,0 +1,10 @@
+# environment variables:
+AFL_CUSTOM_INFO_PROGRAM=/home/barry/桌面/SandboxFuzzer/ECSSandbox/sandbox_harness
+AFL_CUSTOM_INFO_PROGRAM_ARGV=
+AFL_CUSTOM_INFO_OUT=/home/barry/桌面/SandboxFuzzer/ECSSandbox/results/state_1_user/i2/fuzzer_2
+AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
+AFL_NO_AFFINITY=1
+AFL_NO_UI=1
+AFL_SKIP_CPUFREQ=1
+# command line:
+'afl-fuzz' '-i' '/home/barry/桌面/SandboxFuzzer/ECSSandbox/corpus/state_1_user/init_shards/2' '-o' '/home/barry/桌面/SandboxFuzzer/ECSSandbox/results/state_1_user/i2' '-M' 'fuzzer_2' '-F' '/home/barry/桌面/SandboxFuzzer/ECSSandbox/work/state_1_user/2' '-t' '1000' '--' '/home/barry/桌面/SandboxFuzzer/ECSSandbox/sandbox_harness'

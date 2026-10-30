@@ -7,13 +7,14 @@ derive_prefix.py — 给真靶机推导前缀消息与状态种子（会话前�
      （每条发送前清零 SHM —— 增量覆盖会把状态差异边去重掉，见 tcp_shm_oracle）
   2. A 段建依赖矩阵：逐条移除，看谁的覆盖率掉。产出是【集合】不是切点，
      所以前缀不必是会话的前段连续子表（HSPFuzzer 算法 2 的假设，实测证伪）
-  3. B 段按【目标命令】求最短保序前置序列，导出成沙箱侧认的格式：
+  3. B 段按【目标命令】求 1-最小保序前置序列（反向贪心，不保证全局最短），
+     导出成沙箱侧认的格式：
          prefix_analyzer_output/<state>/prefix.raw   到达该状态的前缀串
          prefix_analyzer_output/<state>/seeds/*.raw  该状态下的变异起点
      一个状态 = 一个目标命令。对 [NOOP, USER, SYST, PASS, HELP, PWD]，
      PWD 状态的 prefix.raw 是 USER+PASS（位置 1,3），不是任何 msgs[:k]。
 
-δ 自动测噪声地板校准（中位数），不要手拍 —— 手拍 0.05 在真机上会把
+δ 自动测噪声地板校准（判定统计量零分布的 max×2.5），不要手拍 —— 手拍 0.05 在真机上会把
 PASS→PWD 这类弱信号压掉。可用 --delta 强制覆盖（不推荐）。
 
 用法:
@@ -43,6 +44,7 @@ from prefix_msg_identify import SequenceSimulator  # noqa: E402
 from perstate_prefix import (  # noqa: E402
     calibrate_delta,
     minimize_reaching_sequence,
+    playable_in_state,
     rebuild_session_prefix,
 )
 from tcp_shm_oracle import TcpShmOracle  # noqa: E402
@@ -123,7 +125,7 @@ def main() -> int:
     ap.add_argument("--delta", type=float, default=None,
                     help="覆盖率差异阈值；缺省自动测噪声地板校准（推荐）")
     ap.add_argument("--repeats", type=int, default=5,
-                    help="每组实验重复次数，取中位数压噪声（缺省 5）")
+                    help="每组实验重复次数，取多数票共识核压噪声（缺省 5）")
     ap.add_argument("--prefix-name", default="derived",
                     help="导出目录前缀，如 admin_ftp → admin_ftp_state_2_pwd")
     ap.add_argument("-o", "--out-root", default="prefix_analyzer_output")
@@ -169,7 +171,7 @@ def main() -> int:
 
         # ── 按【目标命令】求最短前置（必须在 oracle 存活时做完）───
         # 探针闭包引用 oracle，靶机一停就连不上了。
-        print(f"\n[*] 逐目标命令求最短保序前置序列")
+        print(f"\n[*] 逐目标命令求 1-最小保序前置序列（反向贪心）")
         for j in range(n):
             label = msg_label(msgs[j])
             cand = [i for i in range(n) if i != j]
@@ -189,7 +191,7 @@ def main() -> int:
 
     print()
     print("[*] 会话前缀重建结果:")
-    print(f"    δ 校准    : δ={res.delta_used:.4f}  噪声地板(中位)={res.noise_floor:.4f}")
+    print(f"    δ 校准    : δ={res.delta_used:.4f}  噪声地板(零分布 max)={res.noise_floor:.4f}")
     print(f"    依赖矩阵  : "
           f"{ {i: sorted(d) for i, d in res.deps.items() if d} }")
     print(f"    会话级前置: {res.prerequisite_set}  "
@@ -233,11 +235,17 @@ def main() -> int:
             f.write(msgs[j])
 
         # 种子 = 前置被满足后能打的消息（含目标自己，它正是最该 fuzz 的那条）
-        have = {msg_label(msgs[k]) for k in reach}
+        #
+        # 归属判据是 playable_in_state（依赖矩阵），【不】查 RFC 真值表：
+        # 真实目标上没有那张表，拿它当判据等于把答案抄进产物。RFC 表在本
+        # 脚本里只做校验对照，不做生成依据。这条界线是"算法可用"和
+        # "算法自说自话"的分界。
+        #
+        # 「种子池必须单状态」就是这一行的含义：一个状态池只收前置被【本
+        # 状态】reaching 序列满足的种子，混进别状态的种子会污染该池可达性。
         n_seed = 0
         for i in range(n):
-            need = set(rfc.get(msg_label(msgs[i]), ()))
-            if need <= have or i == j:
+            if playable_in_state(res, i, reach) or i == j:
                 with open(os.path.join(
                         sd, f"{args.prefix_name}_{j}_{n_seed + 1}.raw"), "wb") as f:
                     f.write(msgs[i])

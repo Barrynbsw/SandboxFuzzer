@@ -15,13 +15,18 @@
 # 用法:
 #   ./run_state_node.sh <state_name> [n_secondaries] [duration_sec]
 #
-#   state_name     : prefix_analyzer_output/ 下的状态目录名
+#   state_name     : 状态目录名。优先在 prefix_analyzer_output_rebuild/
+#                    （会话前缀重建产物，每目标命令一个状态）里找，
+#                    找不到再退回 prefix_analyzer_output/（旧 Algorithm 2 产物）
 #   n_secondaries  : 从实例数量（默认 nproc-1，即 1 + N 个实例）
 #   duration_sec   : 运行时长，0 = 一直跑（默认 0）
 #
 # 环境变量:
+#   PREFIX_ROOT    钉死状态产物根目录（缺省按上面的顺序自动找）
 #   BASE_PORT      靶机起始端口（默认 9001，每个实例 +1）
 #   BIND_CPUS=1    把实例绑定到 CPU 核（默认不绑定）
+#   SBF_TARGET_TTL 靶机存活上限秒数，到点换新（默认 15，0 = 不回收）。
+#                  必须回收：真目标会自毒化，详见下面保活循环处的注释。
 #   REDIS_URL      若设置，则额外启动 finding_sync.py 异步回传
 #                  （中央 Dispatcher 尚未定稿，默认关闭）
 #
@@ -59,13 +64,24 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
     exit 1
 fi
 
-STATE_NAME=$1
-N_SECONDARIES=${2:-}
-DURATION=${3:-0}
+# --fresh / SBF_FRESH=1 显式确认后才真正删旧数据；默认改归档（见 [CLEAN] 段）
+FRESH_MODE=${SBF_FRESH:-0}
+POS=()
+for _arg in "$@"; do
+    case "$_arg" in
+        --fresh) FRESH_MODE=1 ;;
+        *) POS+=("$_arg") ;;
+    esac
+done
+STATE_NAME=${POS[0]:-}
+N_SECONDARIES=${POS[1]:-}
+DURATION=${POS[2]:-0}
 
 if [ -z "$STATE_NAME" ]; then
-    echo "Usage: $0 <state_name> [n_secondaries] [duration_sec]"
+    echo "Usage: $0 <state_name> [n_secondaries] [duration_sec] [--fresh]"
     echo "  e.g. $0 state_2_auth 3 60"
+    echo "  默认把旧 results/work/corpus 归档进 archive/ 后再开跑（不丢数据）；"
+    echo "  --fresh（或 SBF_FRESH=1）才无条件删除旧数据。"
     exit 1
 fi
 
@@ -128,6 +144,21 @@ BASE_PORT=${BASE_PORT:-9001}
 # 用 ${VAR-default}（仅未设置时取默认）：REDIS_URL="" 表示明确关闭
 REDIS_URL=${REDIS_URL-}
 SYNC_INTERVAL=${SYNC_INTERVAL:-5}
+# 靶机存活上限（秒），0 = 不回收。见下方保活循环的注释：真目标会自毒化，
+# 定时回收是让吞吐保持平稳的唯一可靠办法。
+#
+# 取值的账（默认 15）：harness 每轮 2 条会话（载荷 + 判活），实测单实例
+#   ~300 exec/s（harness 被 5ms 回应轮询卡住，是延迟受限，换机器也不怎么变）。
+#   → 每秒 ~600 条会话 = 600 个泄漏线程；15s 一个窗口 ~9,000 个，
+#   离 pthread_create 的 ENOMEM 墙（32,754 ≈ vm.max_map_count/2）还有 3.6× 余量。
+#   TTL=30 时余量只剩 1.8×，跑得快一点就撞墙。
+#   实测两档吞吐没有实质差别（180s×3 实例同一批 fixture：TTL=30 共 161,041
+#   次执行、TTL=15 共 150,645 次，差异落在实例间波动内；两档全程平稳，
+#   banner 一直是 220 LightFTP），所以取短几乎没有代价。
+#   要提吞吐上限前，先按这个式子把 TTL 一起改小。
+#   实验各臂一律同一 TTL = 同样的回收节奏。
+SBF_TARGET_TTL=${SBF_TARGET_TTL:-15}
+export SBF_TARGET_TTL
 # hash   = 按 sha256%N 分片，跨进程共享优质种子（发现者会有 1 份残留）
 # finder = 发现者继续跟进，运行期零重复
 OWNER_MODE=${OWNER_MODE:-hash}
@@ -135,18 +166,44 @@ OWNER_MODE=${OWNER_MODE:-hash}
 # 靶机崩溃是预期的（代理自杀式崩溃检测），别把 core dump 写满磁盘
 ulimit -c 0 2>/dev/null || true
 
-PREFIX_DIR="$SCRIPT_DIR/prefix_analyzer_output"
-PREFIX_FILE="$PREFIX_DIR/$STATE_NAME/prefix.raw"
-SEED_DIR="$PREFIX_DIR/$STATE_NAME/seeds"
+# ─── 状态产物查找 ────────────────────────────────────────────────
+# 两套产物，查找顺序不能搞反：
+#   prefix_analyzer_output_rebuild/   会话前缀重建，每【目标命令】一个状态
+#                                     （admin_ftp_state_2_PWD …），是当前算法的产物
+#   prefix_analyzer_output/           旧的 Algorithm 2 产物，init/user/auth 三态
+#                                     run_tests.sh 的回归用例（state_1_user）还挂在它下面
+# 新目录优先，旧目录兜底，老状态名才不会失效。要钉死用 PREFIX_ROOT=<dir>。
+PREFIX_DIRS=()
+if [ -n "${PREFIX_ROOT:-}" ]; then
+    PREFIX_DIRS=("$PREFIX_ROOT")
+else
+    PREFIX_DIRS=("$SCRIPT_DIR/prefix_analyzer_output_rebuild"
+                 "$SCRIPT_DIR/prefix_analyzer_output")
+fi
 
-if [ ! -d "$PREFIX_DIR/$STATE_NAME" ]; then
+PREFIX_DIR=""
+for _pdir in "${PREFIX_DIRS[@]}"; do
+    if [ -d "$_pdir/$STATE_NAME" ]; then
+        PREFIX_DIR="$_pdir"
+        break
+    fi
+done
+
+if [ -z "$PREFIX_DIR" ]; then
     echo "[!] 状态不存在: $STATE_NAME"
     echo "    可用状态:"
-    for d in "$PREFIX_DIR"/*/; do
-        [ -d "$d" ] && echo "      - $(basename "$d")"
+    for _pdir in "${PREFIX_DIRS[@]}"; do
+        [ -d "$_pdir" ] || continue
+        echo "    来自 ${_pdir#"$SCRIPT_DIR"/}:"
+        for _sdir in "$_pdir"/*/; do
+            [ -d "$_sdir" ] && echo "      - $(basename "$_sdir")"
+        done
     done
     exit 1
 fi
+PREFIX_FILE="$PREFIX_DIR/$STATE_NAME/prefix.raw"
+SEED_DIR="$PREFIX_DIR/$STATE_NAME/seeds"
+echo "[STATE] $STATE_NAME  ← ${PREFIX_DIR#"$SCRIPT_DIR"/}"
 
 # ─── 实例数：默认吃满核心 ───
 if [ -z "$N_SECONDARIES" ]; then
@@ -160,7 +217,7 @@ OUT_BASE="$SCRIPT_DIR/results/$STATE_NAME"
 CORPUS_DIR="$SCRIPT_DIR/corpus/$STATE_NAME"
 WORK_DIR="$SCRIPT_DIR/work/$STATE_NAME"
 STATE_FILE="$SCRIPT_DIR/node_state.current"
-# SHM 号必须落在 OUT_BASE 之外：OUT_BASE 每次启动都会 rm -rf
+# SHM 号必须落在 OUT_BASE 之外：OUT_BASE 每次启动都会被清空/归档
 RUN_DIR="$SCRIPT_DIR/run"
 SHM_LIST_FILE="$RUN_DIR/$STATE_NAME.shmids"
 
@@ -271,7 +328,27 @@ for ((p = 0; p < N_INSTANCES; p++)); do
 done
 sleep 1
 
-rm -rf "$OUT_BASE" "$WORK_DIR" "$CORPUS_DIR"
+# 旧数据默认【归档】而不是删：误启动/重启一次就 rm -rf 会把积累的语料池与
+# 实验结果永久毁掉（审查 F3）。要真正清空请显式 --fresh / SBF_FRESH=1。
+if [ "$FRESH_MODE" = "1" ]; then
+    rm -rf "$OUT_BASE" "$WORK_DIR" "$CORPUS_DIR"
+else
+    ARCHIVE_DIR="$SCRIPT_DIR/archive/${STATE_NAME}_pre_$(date +%Y%m%d-%H%M%S)"
+    _moved=0
+    for _d in "$OUT_BASE" "$WORK_DIR" "$CORPUS_DIR"; do
+        if [ -d "$_d" ] && [ -n "$(ls -A "$_d" 2>/dev/null)" ]; then
+            # 按来源分子目录（results/work/corpus）：三个目录同名，
+            # 平铺 mv 会互相套成 <state>/<state>/<state>
+            _kind=$(basename "$(dirname "$_d")")
+            mkdir -p "$ARCHIVE_DIR/$_kind"
+            mv "$_d" "$ARCHIVE_DIR/$_kind/"
+            _moved=1
+        fi
+    done
+    if [ "$_moved" = "1" ]; then
+        echo "[ARCHIVE] 旧数据已归档: ${ARCHIVE_DIR#"$SCRIPT_DIR"/}"
+    fi
+fi
 mkdir -p "$OUT_BASE" "$WORK_DIR" "$CORPUS_DIR"
 
 echo "$STATE_NAME" > "$STATE_FILE"
@@ -329,8 +406,44 @@ print(libc.shmget(0, $TARGET_SHM_SIZE, 0o1000 | 0o666))
     BIN_PATH="$SCRIPT_DIR/${TARGET_BIN#./}"
     # TARGET_ARGS 里的 $PORT 占位符替换成该实例端口，再按空白切成参数数组
     read -r -a ARG_ARR <<< "${TARGET_ARGS//\$PORT/$PORT}"
-    bash -c 'while true; do env "$@" 2>/dev/null; sleep 0.1; done' \
-        sbf-server-loop "${COV_ENV[@]}" "$BIN_PATH" "${ARG_ARR[@]}" 2>/dev/null &
+    # 保活 + 【定时回收】。回收不是可选的优化，是让实验成立的前提：
+    #   真目标会自毒化。LightFTP 的 ftpmain() 对 ftp_client_thread 既不
+    #   pthread_join 也不 pthread_detach（ftpserv.c:2026 只 create 就放着），
+    #   每个 FTP 会话泄漏一个线程的 VMA；攒到 pthread_create 直接 ENOMEM
+    #   （实测 32,754 个，≈ vm.max_map_count/2）后，它对【所有】新连接一律回
+    #   "MAXIMUM ALLOWED USERS CONNECTED"，再也不服务 —— 吞吐从 250 exec/s
+    #   塌到 4.5 exec/s，且不可恢复。
+    #   harness 每轮开 2 条会话（载荷 + 判活探测），所以墙在 ~16k 次执行/实例
+    #   ≈ 60s。这跟"会话前缀重建/状态分池"毫无关系，但会让所有 >60s 的实验
+    #   测在失能靶机上 —— 机器时间对齐的前提整个作废。
+    #   maxusers 救不了这个（那是会话槽，不是线程数，实测 10→1024 失能点
+    #   一模一样）；LD_PRELOAD 强行 detached 又会连带改掉 WorkerThreadCleanup
+    #   对数据线程的 pthread_join 语义。所以按 SBF_TARGET_TTL 定时换新靶机。
+    #   （maxusers 另有其用：挡住 PASV 载荷把会话槽顶穿的丢轮混淆，
+    #     见 targets/lightftp.sh —— 两件事、两个旋钮，别再混为一谈。）
+    #   回收对正确性【零影响】：harness 每轮都从 prefix.raw 重建协议状态。
+    #   正好赶上某一轮时，判活探测失败 → confirm_crash 的 wait_target_up 等它
+    #   起来 → 复现不出 → 判为非崩溃，丢掉该轮而已，绝不误记 crash。
+    #   各臂同一 TTL = 同样的回收节奏，不给任何一方加偏置。
+    #   stdout 也必须扔掉：LightFTP 的 writelogentry → writeconsolestr 是
+    #   【无条件】往 stdout 写的（跟 logfilepath 无关），跑起来每分钟约 20MB
+    #   文本灌进节点日志。这跟测量无关（覆盖率走 SHM、正确性走 socket 应答，
+    #   靶机控制台输出谁都不看），两臂同样受影响，扔掉不构成偏置。
+    bash -c 'while true; do
+        ttl=${SBF_TARGET_TTL:-15}
+        if [ "$ttl" -gt 0 ] 2>/dev/null; then
+            env "$@" >/dev/null 2>&1 &
+            tp=$!
+            ( sleep "$ttl"; kill "$tp" 2>/dev/null ) &
+            kp=$!
+            wait "$tp" 2>/dev/null
+            kill "$kp" 2>/dev/null
+            wait "$kp" 2>/dev/null
+        else
+            env "$@" >/dev/null 2>&1
+        fi
+        sleep 0.1
+    done' sbf-server-loop "${COV_ENV[@]}" "$BIN_PATH" "${ARG_ARR[@]}" 2>/dev/null &
     PIDS_SERVER_LOOP+=($!)
     PORTS+=($PORT)
     SHM_IDS+=($SHM_ID)
@@ -354,6 +467,8 @@ python3 "$SCRIPT_DIR/local_seedhub.py" \
     --owner-mode "$OWNER_MODE" \
     --probe-port "$BASE_PORT" \
     --prefix-file "$PREFIX_FILE" \
+    --banner-lines "$TARGET_BANNER_LINES" \
+    --probe-cmd "$TARGET_PROBE_CMD" \
     --bootstrap
 echo ""
 

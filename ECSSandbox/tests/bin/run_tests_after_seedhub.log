@@ -1,0 +1,45 @@
+
+[1m▸ 1) 编译[0m
+  [32m✓[0m afl_map_bridge.o（必须用普通 cc，避开 AFL++ LLVM pass 符号冲突）
+  [32m✓[0m stateful_server
+  [32m✓[0m sandbox_harness
+  [32m✓[0m test_crash_detection
+  [32m✓[0m real_target（真目标 PoC，零 SBF 代码）
+
+[1m▸ 2) 崩溃判定链（SIGPIPE / 落core窗口 / 应答残留 / 多行归属）[0m
+  [32m✓[0m 单元测试全过（25 项）
+
+[1m▸ 2b) seedhub 探测口径（前缀逐条发 / banner / 应答残留）[0m
+  [32m✓[0m 探测口径全过（11 项）
+
+[1m▸ 3) 崩溃归属判卷（replay_judge.py 双向）[0m
+  [32m✓[0m state_1_user 崩溃样本 6/6 可复现
+  [32m✓[0m state_1_user 良性样本 9/9 零误报
+  [32m✓[0m state_2_auth 崩溃样本 4/4 可复现
+  [32m✓[0m state_2_auth 良性样本 6/6 零误报
+
+[1m▸ 3b) 覆盖率注入（真靶机零侵入）[0m
+  [32m✓[0m 覆盖率注入全过（5 项）
+
+[1m▸ 4a) 种子去重分工（重复必须为 0）[0m
+      [seedhub] 池=9  分片=[5, 2, 0, 2]  合计=9  重复=0  发现者残留=0
+  [32m✓[0m 重复=0 —— 没有任何种子被两个实例同时持有
+  [32m✓[0m work/ 分片之间无同名种子
+
+[1m▸ 4b) SHM 生命周期（跑完不得残留）[0m
+id: cannot find name for user ID 1000
+id: cannot find name for user ID 1000
+      64KB/666/0连接 段数:  跑前 0 → 跑后 0
+  [32m✓[0m 无 SHM 残留（+0）
+
+[1m▸ 4b-2) 崩溃残留清扫（kill -9 后自愈）[0m
+id: cannot find name for user ID 1000
+      制造孤儿 3 个段，实测遗留 3 个
+id: cannot find name for user ID 1000
+  [32m✓[0m 孤儿段被启动清扫（3 → 0）
+  [32m✓[0m 幽灵锁被识别并自愈（不会被上一轮的孤儿挡住）
+
+════════════════════════════════════════
+  通过 17   失败 0
+════════════════════════════════════════
+✓ 全绿

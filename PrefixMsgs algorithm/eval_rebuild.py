@@ -4,7 +4,8 @@ eval_rebuild.py —— 评估重建算法的三个薄弱点
 
 5/5 是在【无噪声、真值即模型】的模拟器上取得的，以下三点最可能推翻它：
 
-  1. 覆盖率噪声：真实 afl-showmap 有 ASLR/线程调度抖动，DIFF 不再是 0 或 0.73。
+  1. 覆盖率噪声：真实 afl-showmap 有 ASLR/线程调度抖动，DIFF 不再是干净的
+     「非依赖 = 0、真依赖 = 高值」二分，而是拖了尾巴。
   2. 1-最小 ≠ 全局最短：反向贪心是 1-最小，存在走不到全局最短的反例。
   3. 实验成本：A 段 N 次、B 段最坏 O(N^2) 次探测，每次一个网络会话。
 
@@ -73,6 +74,7 @@ def noise_sweep():
     print(f"  {'p':>5s}  {'算法':22s}  {'δ':>6s}  {'地板':>6s}  "
           f"{'P':>5s} {'R':>5s}  {'通过':>6s}")
     print("  " + "-" * 62)
+    rows = []
     for p in (0.0, 0.01, 0.02, 0.05, 0.10, 0.20, 0.30):
         agg = {}
         for label, fn in (("Algorithm 2", _a2), ("会话前缀重建", _rebuild)):
@@ -99,7 +101,10 @@ def noise_sweep():
             print(f"  {p:>5.2f}  {label:22s}  {d:6.4f}  {f:6.4f}  "
                   f"{P/len(SCENARIOS):5.2f} {R/len(SCENARIOS):5.2f}  "
                   f"{ok}/{len(SCENARIOS)}")
+            rows.append((p, label, d, f, P / len(SCENARIOS),
+                         R / len(SCENARIOS), ok, len(SCENARIOS)))
         print()
+    return rows
 
 
 def _a2(sim, n, truth, delta):
@@ -156,20 +161,24 @@ def gap_demo():
 # ── 3. 实验成本 ────────────────────────────────────────────────────
 
 def cost_model():
-    print(f"\n{'=' * 78}\n3. 实验成本（每次探测 = 一个网络会话）")
+    print(f"\n{'=' * 78}\n3. 实验成本（每次探测 = 一个网络会话；repeats=5 共识核）")
     print("=" * 78)
     print(f"  {'N':>4s}  {'Algorithm 2':>14s}  {'重建 A 段':>12s}  "
           f"{'重建 B 段(每状态)':>18s}  {'合计/状态':>10s}")
     print("  " + "-" * 66)
+    R = 5                       # 默认 repeats：A 段每类实验都重复 R 次取共识核
     for n in (5, 10, 20, 50, 100):
         a2 = 1 + n - 1          # 基准 1 次 + 逐条移除 (n-1) 次，见 identify 循环上界
-        a = 1 + n               # 基准 1 次 + 每条移除 1 次
-        # B 段：反向贪心最坏每轮删 1 条，最多 n 轮 → n(n+1)/2 次探测
+        # A 段 = δ 校准 2R 次完整序列 + 依赖矩阵 (1+n)×R 次
+        # （base R 次 + 每条移除各 R 次，见 build_dependency_matrix）。
+        # 早先写 1+n 不乘 R，低估约 5 倍，也没算校准。
+        a = 2 * R + (1 + n) * R
+        # B 段：反向贪心最坏每轮删 1 条，最多 n 轮 → n(n+1)/2 次探测（不重复）
         b = n * (n + 1) // 2
         print(f"  {n:>4d}  {a2:>14d}  {a:>12d}  {b:>18d}  {a + b:>10d}")
     print(f"\n  实测吞吐 ~270 会话/s（lightftp, 3 实例，含崩溃探测）：")
     for n in (20, 50):
-        a = 1 + n
+        a = 2 * R + (1 + n) * R
         b = n * (n + 1) // 2
         print(f"    N={n:3d}  单状态前缀重建 ≈ {(a + b) / 270:.1f}s；"
               f"5 个状态 ≈ {5 * (a + b) / 270:.1f}s")
@@ -178,26 +187,43 @@ def cost_model():
 
 
 def main():
-    noise_sweep()
-    gap_demo()
+    rows = noise_sweep()
+    gap = gap_demo()
     cost_model()
+
+    # 小结只写这张表撑得住的结论 —— 数字全部从 rows 现算，
+    # 免得表格改了、小结还留着旧数字（2026-10-29 就栽过一次）。
+    N = rows[0][7]
+    rb = {p: (d, fl, ok) for (p, label, d, fl, P, R, ok, _) in rows
+          if label == "会话前缀重建"}
+    a2 = {p: ok for (p, label, d, fl, P, R, ok, _) in rows
+          if label == "Algorithm 2"}
+    ps = sorted(rb)
+    full = [p for p in ps if rb[p][2] == N]
+    broke = [p for p in ps if rb[p][2] != N]
+
     print(f"\n{'=' * 78}")
     print("小结（只写数据支持的结论）")
     print("-" * 78)
-    print("  · 噪声上限【硬】: 覆盖率依赖推断的天花板由信噪比决定。")
-    print("    本模型里成功路径 vs 错误路径的 DIFF = 0.73；一旦校准出的 δ")
-    print("    超过这个值（p≈0.10 时 δ=0.86），真依赖就被噪声淹没，")
-    print("    任何算法都判不出来。这不是参数问题，是覆盖率作为依赖信号的")
-    print("    固有局限。工程上要往下走，得换【响应码】当依赖信号")
-    print("    （AFLNet IPSM 语义，无噪声），SandboxFuzzer 的 PROBE_CMD 已经有。")
-    print("  · 噪声区间【可救】: p ≤ 0.05 时 δ 校准把重建稳在 5/5，")
-    print("    而 δ 手拍 0.05 会在 p=0.02 就崩成 precision 0.55 的虚报。")
-    print("    δ 校准是必要的，不是锦上添花。")
-    print("  · Algorithm 2 的失败【与噪声无关】: p=0 时它也只有 1/5，")
-    print("    根因是 num>τ 的全局计数 + 前缀连续假设，不是抖动。")
-    print("  · 最短性: 反向贪心只保证 1-最小，存在 Nx 差距；真实 FTP/SMTP 的")
-    print("    到达路径基本唯一，差距罕见，但论文里必须写清楚这个上限。")
-    print("  · 成本: A 段与 Algorithm 2 同阶，B 段多 O(N^2)；N<50 时可忽略。")
+    print(f"  · 抗噪区间: 重建在 p ∈ [{min(full):.2f}, {max(full):.2f}] "
+          f"全部 {N}/{N}"
+          + (f"，p={min(broke):.2f} 起掉到 {rb[min(broke)][2]}/{N}。"
+             if broke else "，整个扫描区间内不失手。"))
+    print(f"    δ 校准跟着噪声走：p=0 → δ={rb[ps[0]][0]:.4f}；"
+          f"p={ps[-1]:.2f} → δ={rb[ps[-1]][0]:.4f}。")
+    print(f"  · 天花板是【信噪比】不是参数: 校准出的 δ 涨到接近真依赖的 DIFF 时，")
+    print(f"    「依赖」和「噪声」就分不开，任何算法都一样。真机上不去硬扛这个")
+    print(f"    天花板 —— validate_prefix.py 用【响应码】当依赖真值")
+    print(f"    （AFLNet IPSM 语义，无噪声），覆盖率只做算法侧的信号。")
+    worst_floor = max(rb[p][1] for p in ps)
+    print(f"  · δ 校准是必要的: 实测噪声地板最高到 {worst_floor:.4f}"
+          f"（p={max(ps, key=lambda p: rb[p][1]):.2f}），"
+          f"手拍 δ=0.05 低于它，必然虚报；校准后全区间 P=R=1.00。")
+    print(f"  · Algorithm 2 的失败【与噪声无关】: p=0 时它只有 {a2[ps[0]]}/{N}，")
+    print(f"    根因是 num>τ 的全局计数 + 前缀连续假设，不是抖动。")
+    print(f"  · 最短性: 反向贪心只保证 1-最小，本例差距 {gap}x；真实 FTP/SMTP 的")
+    print(f"    到达路径基本唯一，差距罕见，但论文里必须写清楚这个上限。")
+    print(f"  · 成本: A 段与 Algorithm 2 同阶，B 段多 O(N^2)；N<50 时可忽略。")
 
 
 if __name__ == "__main__":

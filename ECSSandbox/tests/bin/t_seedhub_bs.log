@@ -1,0 +1,34 @@
+======================================================================
+bootstrap 崩溃分类真靶机验收（对照 sandbox_harness.c 判定口径）
+======================================================================
+── state_1_user/crashes  预期判死  × 6 ──
+  ✓ c1_pass_crash.raw → 崩溃
+  ✓ c2_pass_crash_variant.raw → 崩溃
+  ✓ c3_multiline.raw → 崩溃
+  ✓ f_id:000000_sig:06_src:000000_time:35092_execs:4456_op:havoc_rep:1 → 崩溃
+  ✓ f_id:000000_sig:06_src:000000_time:5113_execs:854_op:havoc_rep:2 → 崩溃
+  ✓ f_id:000001_sig:06_src:000000_time:21630_execs:3631_op:havoc_rep:1 → 崩溃
+── state_1_user/benign  预期判活  × 9 ──
+  ✓ b1_pass_wrong.raw → 存活
+  ✓ b2_pass_truncated.raw → 存活
+  ✓ b3_double_user.raw → 存活
+  ✓ b4_pass_lowercase.raw → 存活
+  ✓ b5_multiline_benign.raw → 存活
+  ✓ f_01e5300cb938420bccc1b28b829830842f7929e1c6c817e5f8280f59ae790fc5.raw → 存活
+  ✓ f_19469a78c4e76f5350bac399a27c6fe1bc0d64ed7fe5093faa49c5a1c2f813f3.raw → 存活
+  ✓ f_1f994b09bd3839d9309d92d337c038651e1413036641918efd0bfb6fa799e74d.raw → 存活
+  ✓ f_272f2508a48d8583cccbf746ac1811fa8ea553149b76f23d12851ac3556789ee.raw → 存活
+── state_2_auth/crashes  预期判死  × 4 ──
+  ✓ c1_stor_bug.raw → 崩溃
+  ✓ c2_stor_bug_variant.raw → 崩溃
+  ✓ c3_multiline.raw → 崩溃
+  ✓ c4_multiline2.raw → 崩溃
+── state_2_auth/benign  预期判活  × 6 ──
+  ✓ b1_stor_ok.raw → 存活
+  ✓ b2_multiline_benign.raw → 存活
+  ✓ b3_retr.raw → 存活
+  ✓ b4_stor_case.raw → 存活
+  ✓ b5_stor_wrongprefix.raw → 存活
+  ✓ b6_multiline_benign2.raw → 存活
+----------------------------------------------------------------------
+  通过 25   失败 0

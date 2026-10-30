@@ -1,0 +1,10 @@
+# environment variables:
+AFL_CUSTOM_INFO_PROGRAM=/sbfpkg/ECSSandbox/sandbox_harness
+AFL_CUSTOM_INFO_PROGRAM_ARGV=
+AFL_CUSTOM_INFO_OUT=/sbfpkg/ECSSandbox/results/B_mixed_pool/i2/fuzzer_2
+AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
+AFL_NO_AFFINITY=1
+AFL_NO_UI=1
+AFL_SKIP_CPUFREQ=1
+# command line:
+'afl-fuzz' '-i' '/sbfpkg/ECSSandbox/corpus/B_mixed_pool/init_shards/2' '-o' '/sbfpkg/ECSSandbox/results/B_mixed_pool/i2' '-M' 'fuzzer_2' '-F' '/sbfpkg/ECSSandbox/work/B_mixed_pool/2' '-t' '1000' '--' '/sbfpkg/ECSSandbox/sandbox_harness'

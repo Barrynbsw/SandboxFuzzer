@@ -1,0 +1,10 @@
+{
+  "sha256": "d5a86f727adc6b1058e4cb8ec0f9958fb60d292cf4e5615b7b90e30029c0cdf6",
+  "size": 27,
+  "found_by": "i1/fuzzer_1",
+  "original_name": "id:000016,src:000000,time:3205,execs:949,op:havoc,rep:4",
+  "is_crash": false,
+  "state": "admin_ftp_state_2_PWD",
+  "owner": 0,
+  "ts": 1793242655.9246438
+}

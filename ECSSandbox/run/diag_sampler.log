@@ -1,0 +1,287 @@
+pid_max=4194304 threads-max=118215
+t=54613 execs=0 fftp_threads= zombies=0 procs=8 banner=NNN
+t=54615 execs=0 fftp_threads= zombies=0 procs=7 banner=NNN
+t=54618 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54620 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54622 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54624 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54626 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54628 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54630 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54632 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54635 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54637 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54639 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54641 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54643 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54645 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54648 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54650 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54652 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54654 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54656 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54658 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54660 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54662 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54665 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54667 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54669 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54671 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54673 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54676 execs=72 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54678 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54680 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54682 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54684 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54687 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54689 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54691 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54693 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54695 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54697 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54699 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54701 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54704 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54706 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54708 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54710 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54712 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54714 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54716 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54718 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54721 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54723 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54725 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54727 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54729 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54731 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54733 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54735 execs=45862 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54737 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54739 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54742 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54744 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54746 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54748 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54750 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54752 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54754 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54756 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54759 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54761 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54763 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54765 execs=49807 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=24 banner=YYY
+t=54767 execs=50212 fftp_threads=,0
+0,0
+0,0
+0 zombies=0 procs=11 banner=YYY

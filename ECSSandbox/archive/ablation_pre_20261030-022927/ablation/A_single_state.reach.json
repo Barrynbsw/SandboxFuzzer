@@ -1,0 +1,68 @@
+{
+  "label": "A_single_state",
+  "prefix": "USER admin\r\nPASS 123456\r\n",
+  "reachable": 6,
+  "total": 6,
+  "seeds": [
+    {
+      "seed": "admin_ftp_2_1.raw",
+      "cmd": "USER",
+      "code": "331",
+      "want": [
+        "331"
+      ],
+      "playable": true,
+      "reply": "331 User admin OK. Password required\r\n"
+    },
+    {
+      "seed": "admin_ftp_2_2.raw",
+      "cmd": "PASS",
+      "code": "230",
+      "want": [
+        "230"
+      ],
+      "playable": true,
+      "reply": "230 User logged in, proceed.\r\n"
+    },
+    {
+      "seed": "admin_ftp_2_3.raw",
+      "cmd": "PWD",
+      "code": "257",
+      "want": [
+        "257"
+      ],
+      "playable": true,
+      "reply": "257 \"/\" is a current directory.\r\n"
+    },
+    {
+      "seed": "admin_ftp_2_4.raw",
+      "cmd": "CWD",
+      "code": "250",
+      "want": [
+        "250"
+      ],
+      "playable": true,
+      "reply": "250 Requested file action okay, completed.\r\n"
+    },
+    {
+      "seed": "admin_ftp_2_5.raw",
+      "cmd": "NOOP",
+      "code": "200",
+      "want": [
+        "200"
+      ],
+      "playable": true,
+      "reply": "200 Command okay.\r\n"
+    },
+    {
+      "seed": "admin_ftp_2_6.raw",
+      "cmd": "TYPE",
+      "code": "200",
+      "want": [
+        "200"
+      ],
+      "playable": true,
+      "reply": "200 Type set to I.\r\n"
+    }
+  ]
+}

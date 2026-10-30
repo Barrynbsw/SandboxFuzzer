@@ -318,12 +318,165 @@ python protocol_seed_analyzer.py selftest
 
 ---
 
-## 七、文件清单
+## 七、会话前缀重建（`perstate_prefix.py`）—— 对算法 2 的两处修正
+
+算法 2 的复现（第四节）是**基线**，不是我们的方法。真机上它有两个坏假设，
+本节的「会话前缀重建」把它们换掉。两个创新点的名字固定为：
+
+| 名字 | 一句话 | 边界 |
+|---|---|---|
+| **会话前缀重建** / session prefix reconstruction | 前缀是**集合**不是切点，按状态求最短保序前置序列 | 就是 `perstate_prefix.py` |
+| **状态分池种子管理** / state-partitioned seed pool | 种子池必须单状态，机器可以多状态 | 就是 `playable_in_state()` 这一条判据 |
+
+> 边界提醒：反向贪心求最小前置序列是 Zeller 2002 那套 delta debugging 的
+> **适配**，不作为算法创新宣称。第三段的拆包判定继承自算法 2 第 18–29 行。
+
+### 7.1 算法 2 的两个坏假设（实测证伪）
+
+| 假设 | 算法 2 | 实测 |
+|---|---|---|
+| **A** 前缀是会话的**前段连续子表** | `PrefixMsgs = Msgs.SUBLIST(0, x)` | 对 `[NOOP, USER, SYST, PASS, HELP, PWD]`，PWD 的正确前置是 USER+PASS（位置 1,3）。**任何** `msgs[:k]` 都给不对 |
+| **B** 一个会话**一个**全局前缀 | 单个 `PrefixMsgs` | 不同目标命令需要不同前置。`PASS` 要 `[USER]`，`NOOP` 要 `[]` |
+
+加上 τ 那一步：无条件噪声消息数超过 τ 就 break，实测 6 场景里算法 2 只对 2 个。
+
+### 7.2 三段结构
+
+```
+A  依赖矩阵    i 是 j 的前置 ⟺ 移除 i 后 j 的自身覆盖变了
+                → 产出是【集合】，不受连续性约束
+B  按状态最小可达序列
+                对每个目标命令 j，反向贪心删前置候选，得 1-最短保序序列
+                → 一个状态 = 一个目标命令，prefix.raw 就是这条序列
+C  拆包判定    NeedSplit / AllSplit（继承算法 2 第 18–29 行）
+                真值必须【解析】出来（拼包语义 + 剩余条数），再跑 detect_split 交叉核对
+```
+
+### 7.3 「自身覆盖」而不是「增量覆盖」—— 这个差别是致命的
+
+`_measure()` **每条发送前清零 SHM**，得到的是「处理本条消息点亮了哪些边」，
+不是「本条新点亮了哪些边」：
+
+```
+cur - acc（增量）会把与前面消息共用的样板边（命令分发、应答发送…）全部去重掉。
+实测 LightFTP 的 PWD 在登录/未登录下【增量覆盖完全相同】
+  （都是 {196,197,737,739,745} 五条边，差异边正好被前面的消息点亮过了）
+但自身覆盖不同 —— 未登录走 530 早退，登录后走 strcpy/strcat 拼 257。
+```
+
+A 段问的是「移除 Mx 后 My 还能不能达到同样的覆盖」，要的正是自身覆盖。
+用增量会让 USER/PASS 被误判成非前缀。
+
+### 7.4 测量层的四件事
+
+| 件 | 作用 | 不做会怎样 |
+|---|---|---|
+| `__AFL_SHM_ID` 注入 | 目标用 afl-clang-fast 编译，启动时传段号，**源码零改动** | 得改靶机源码，结论不干净 |
+| `consensus()` | 同一条件重复 K 次取**多数票**（默认 5 次 ≥3 票） | 单次抖动直接进矩阵 |
+| `edge_threshold()` | 阈值按**边数**不按比例：`max(δ, (容差+0.5)/|union|)` | DIFF 是比值，最小非零值是 1/\|union\|，按比例卡会把 1 条杂散边当成依赖 |
+| `calibrate_delta()` | δ 从决策统计量自己的**零分布**里测出来（两批独立跑，取噪声地板 × 2.5） | 手拍 δ 就成了「δ 是调出来的」 |
+
+### 7.5 多线程靶机的跨会话污染（真机上的头号坑）
+
+LightFTP 每条连接起一个线程，**监听线程与客户端线程并发写同一个 SHM**：
+
+```
+third_party/lightftp/Source/main.c:185    pthread_create(&thid, NULL, &ftpmain, NULL)
+third_party/lightftp/Source/ftpserv.c:2026 pthread_create(&th, ..., &ftp_client_thread, &scb[i])
+```
+
+两类污染，修法不同：
+
+| 污染源 | 现象 | 修法 |
+|---|---|---|
+| 客户端线程**退出**路径 | `s.close()` 后才落笔，下次清零 SHM 之后凭空多 1~2 条边 | `_quiesce()` —— 清零后轮询到连续静默 |
+| 监听线程**常驻**运行 | 边 834 在消息处理中途冒出来，`_quiesce` 等不掉 | `_sample_background()` + `_snap()` —— 采「会话簿记边集」自动减掉 |
+
+后果同形：DIFF 恰好 = 1/16 = 0.0625，看着像一条稳定的弱依赖，实测能把会话级
+前置集从 `[USER, PASS]` 撑成 5 条假阳性，而且重跑又变回去 —— **输出不可复现**。
+
+关键细节：834 这类边只在**有连接进出**时才走得到（accept / 建线程 / 线程退出），
+所以纯空转采样大概率采不到它。`_sample_background()` 必须自带「连接抖动」阶段：
+反复 connect→读 banner→close，一条命令都不发，把簿记路径的边采全。
+
+减掉是安全的：base 与 drop 两次测量减的是同一个集合，`cov_diff` 的分子
+`|a\b|` 不受影响（簿记边本就在两边都出现，是样板代码），只有分母 `|a∪b|` 略缩，
+信号比只会**变大**。顺手把 recv/send/accept 这类每条消息都有的样板边去掉，
+判别力反而更集中。
+
+回归守卫：`../ECSSandbox/probe_coverage_stability.py`（A/B/C 三项确定性测试）。
+
+### 7.6 状态分池种子管理
+
+```python
+prerequisites_of(res, j)                  # j 的前置集合（从依赖矩阵读）
+playable_in_state(res, j, reaching)       # 前置被本状态的 reaching 序列满足
+```
+
+「**种子池必须单状态，机器可以多状态**」就是这一行的含义：一个状态池只收前置被
+**本状态** reaching 序列满足的种子。混进别状态的种子会污染该池的可达性 ——
+变异出来的载荷在本状态下打不响，整个池的反馈就废了。
+
+归属判据是 `playable_in_state`（依赖矩阵），**不查 RFC 真值表**：真实目标上没有
+那张表，拿它当判据等于把答案抄进产物。RFC 表在 `derive_prefix.py` 里只做校验
+对照，不做生成依据。这条界线是「算法可用」和「算法自说自话」的分界。
+
+### 7.7 证据链（LightFTP，源码零改动）
+
+真值用**真实响应码**（RFC 959）定义 —— `i 是 j 的前置 ⟺ 去掉 i 后 j 的响应码变了`。
+与覆盖率同源不同法，审稿人可以拿 RFC 逐条核对。
+
+| 环节 | 脚本 | 判据 |
+|---|---|---|
+| 采集确定性 | `../ECSSandbox/probe_coverage_stability.py` | 三项全 PASS |
+| 算法正确性（模拟器） | `perstate_prefix.py --self-test` / `counterexample_test.py` | A 段 5/5，拆包 5/5 |
+| 算法正确性（真机） | `../ECSSandbox/validate_prefix.py` | A 段 6/6，B 段 33/33 |
+| δ 不靠手调 | 同上 `--delta-sweep` | 全对区间 δ ∈ [0.02, 0.16]（最强非依赖 0.000 < δ < 最弱真依赖 0.200） |
+| 产物可用 | `../ECSSandbox/derive_prefix.py` → `verify_prefix.py --check-seeds` | 试验组 6/6 + 对照组 6/6 + 单状态 25/25 |
+| 抗噪 | `eval_rebuild.py` | p ∈ [0, 0.30] 全 5/5（算法 2 只 1~2/5） |
+| **机制**（创新点 2） | `../ECSSandbox/run_state_partition_ablation.sh` + `reachability_probe.py` | 同一批 6 条种子：单状态池 **6/6** vs 混状态池 **2/6** |
+| **机制**（各状态） | `../ECSSandbox/run_state_sweep.sh` level-1 | 六状态各自 2/2 / 3/3 / 6/6，自洽 |
+| **结果**（创新点 2） | `../ECSSandbox/ablation_report.py` | corpus **+309.1%**、edges **+36.8%**，且付完前缀重放后 execs 还少 19.2% |
+| **结果**（隔离 vs 不隔离） | 同上（主实验块） | 机器时间对齐到 0.6%；同态跑 3× 时长只多 2 条边（146→148） |
+| **并集边覆盖**（替代 Σ） | `../ECSSandbox/union_coverage.py` | ISO 并集 **137** vs MIX **130**；只有 ISO 摸得到 **11** 条、反向 4 条；Σ 虚高 **41.2%** |
+
+对照组那一栏不能省：没有对照，「通过」可能只是因为该命令本来就不需要前缀。
+**对照组必须失败**才证明前缀是必要的，不是假阳性。
+
+跑法（宿主机 glibc 2.31 编不动 fftp，必须进容器，且要挂**包根**）：
+
+```bash
+cd SandboxFuzzer                       # 挂包根，不是 ECSSandbox/：
+docker run --rm --user "$(id -u):$(id -g)" \
+    -v "$PWD":/sbfpkg --workdir /sbfpkg/ECSSandbox \
+    --entrypoint python3 sbf-node /sbfpkg/ECSSandbox/validate_prefix.py --delta-sweep
+```
+
+---
+
+## 八、文件清单
 
 | 文件 | 说明 |
 |---|---|
-| `prefix_msg_identify.py` | 算法 2（前缀消息识别）复现实现，含 `--self-test` |
+| `prefix_msg_identify.py` | 算法 2（前缀消息识别）**基线**复现，含 `--self-test` |
+| `perstate_prefix.py` | **会话前缀重建**（第七节）：依赖矩阵 / 最小可达序列 / 拆包判定 / `playable_in_state` |
+| `tcp_shm_oracle.py` | `__AFL_SHM_ID` 零侵入覆盖率注入的 TCP 后端：`_quiesce` / `_sample_background` / 自身覆盖语义 |
+| `counterexample_test.py` | 算法 2 的反例构造 + 会话前缀重建对照（A 段 5/5 vs 2/5） |
+| `eval_rebuild.py` | 抗噪评测：随机注入 p 比例杂散边，对比两算法 |
 | `protocol_seed_analyzer.py` | **状态集合 / 状态种子 / IPSM** + 算法 2 接线，含 `selftest` |
 | `_selftest_out/` | 算法 2 自测导出（`pre_*.msg` / `seed_*.msg`） |
 | `_selftest_state_out/` | 状态分析自测导出（含 `ipsm.csv` / `seeds_index.csv`） |
 | `../_hspfuzzer_clone/` | HSPFuzzer 官方源码（tarball 解压，拆解用） |
+
+真机侧（`../ECSSandbox/`）：`validate_prefix.py`（ground truth 校验 + δ 扫描）、
+`derive_prefix.py`（导出 `prefix.raw` / `seeds/`）、`verify_prefix.py`（产物验收 +
+种子池单状态）、`probe_coverage_stability.py`（采集确定性回归探针）。
+
+真 fuzz 侧（同在 `../ECSSandbox/`，用上面的产物做实验）：
+`run_state_node.sh`（状态同质化节点启动器，含靶机定时回收 `SBF_TARGET_TTL`，
+见其注释：真目标会自毒化）、`reachability_probe.py`（**level-1** 机制证据：一个
+种子池在某状态下有多少条打到成功码）、`run_state_sweep.sh`（**主实验**：按状态
+隔离 vs 不隔离，机器时间对齐）、`run_state_partition_ablation.sh`（**状态分池
+ablation**：同一批种子只换「待在哪个状态池」）、`ablation_report.py`（汇总
+`fuzzer_stats`，ΣISO 标为上界）、`run_tests.sh` + `tests/`（回归）、
+`diag_wedge.sh` / `diag_stall.sh` / `diag_slot_leak.py`（吞吐诊断工具链）。
